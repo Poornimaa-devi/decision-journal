@@ -1,30 +1,54 @@
-// ==========================
-// Decision Journal
-// Day 6 - JavaScript Basics
-// ==========================
 
-// Variables
 const appName = "Decision Journal";
 let userName = "Guest";
 
-// Function for Get Started button
+const user = {
+    name: "Demo User",
+    email: "demo@example.com",
+    joinedOn: "2026-08-08",
+    totalGoals: 1
+};
+
+const goal = {
+    title: "Learn MERN Stack",
+    deadline: "2026-10-01",
+    progress: 20,
+    completed: false
+};
+
+console.log("===== Decision Journal =====");
+
+console.log("Application Name:");
+console.log(appName);
+
+console.log("----------------------------");
+
+console.log("User Details:");
+console.log(user);
+
+console.log("----------------------------");
+
+console.log("Goal Details:");
+console.log(goal);
+
+console.log("----------------------------");
+
 function welcomeUser() {
     alert("Welcome to " + appName + "!");
 }
 
-// Function for Login button
+// Login Button
 function loginMessage() {
     alert("Login feature coming soon...");
 }
 
-// Function for Signup button
+// Signup Button
 function signupMessage() {
     alert("Signup feature coming soon...");
 }
 
-// Event Listeners
-
 document.addEventListener("DOMContentLoaded", () => {
+
     const getStartedBtn = document.getElementById("getStartedBtn");
     const loginBtn = document.getElementById("loginBtn");
     const signupBtn = document.getElementById("signupBtn");
@@ -40,4 +64,5 @@ document.addEventListener("DOMContentLoaded", () => {
     if (signupBtn) {
         signupBtn.addEventListener("click", signupMessage);
     }
+
 });
