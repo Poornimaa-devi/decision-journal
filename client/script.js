@@ -1,7 +1,20 @@
+// ==========================================
+// Decision Journal
+// Day 9 - Functions & Code Organization
+// ==========================================
+
+// ==========================
+// Variables
+// ==========================
 
 const appName = "Decision Journal";
 let userName = "Guest";
 
+// ==========================
+// Objects
+// ==========================
+
+// User Object
 const user = {
     name: "Demo User",
     email: "demo@example.com",
@@ -9,6 +22,7 @@ const user = {
     totalGoals: 1
 };
 
+// Goal Object
 const goal = {
     title: "Learn MERN Stack",
     deadline: "2026-10-01",
@@ -16,53 +30,57 @@ const goal = {
     completed: false
 };
 
+// ==========================
+// Console Output
+// ==========================
+
 console.log("===== Decision Journal =====");
 
-console.log("Application Name:");
-console.log(appName);
+console.log("Application Name:", appName);
 
-console.log("----------------------------");
+console.log("User Details:", user);
 
-console.log("User Details:");
-console.log(user);
+console.log("Goal Details:", goal);
 
-console.log("----------------------------");
+// ==========================
+// Functions
+// ==========================
 
-console.log("Goal Details:");
-console.log(goal);
-
-console.log("----------------------------");
-
-function welcomeUser() {
-    alert("Welcome to " + appName + "!");
+// Displays a welcome message
+function showWelcomeMessage() {
+    alert(`Welcome ${userName} to ${appName}!`);
 }
 
-// Login Button
-function loginMessage() {
+// Displays a login message
+function showLoginMessage() {
     alert("Login feature coming soon...");
 }
 
-// Signup Button
-function signupMessage() {
+// Displays a signup message
+function showSignupMessage() {
     alert("Signup feature coming soon...");
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+// ==========================
+// Event Listeners
+// ==========================
+
+document.addEventListener("DOMContentLoaded", function () {
 
     const getStartedBtn = document.getElementById("getStartedBtn");
     const loginBtn = document.getElementById("loginBtn");
     const signupBtn = document.getElementById("signupBtn");
 
     if (getStartedBtn) {
-        getStartedBtn.addEventListener("click", welcomeUser);
+        getStartedBtn.addEventListener("click", showWelcomeMessage);
     }
 
     if (loginBtn) {
-        loginBtn.addEventListener("click", loginMessage);
+        loginBtn.addEventListener("click", showLoginMessage);
     }
 
     if (signupBtn) {
-        signupBtn.addEventListener("click", signupMessage);
+        signupBtn.addEventListener("click", showSignupMessage);
     }
 
 });
