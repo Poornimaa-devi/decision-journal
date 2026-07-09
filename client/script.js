@@ -1,6 +1,6 @@
 // ==========================================
 // Decision Journal
-// Day 9 - Functions & Code Organization
+// Day 10 - Arrays and Objects
 // ==========================================
 
 // ==========================
@@ -11,24 +11,40 @@ const appName = "Decision Journal";
 let userName = "Guest";
 
 // ==========================
-// Objects
+// User Object
 // ==========================
 
-// User Object
 const user = {
     name: "Demo User",
     email: "demo@example.com",
     joinedOn: "2026-08-08",
-    totalGoals: 1
+    totalGoals: 3
 };
 
-// Goal Object
-const goal = {
-    title: "Learn MERN Stack",
-    deadline: "2026-10-01",
-    progress: 20,
-    completed: false
-};
+// ==========================
+// Goals Array
+// ==========================
+
+const goals = [
+    {
+        title: "Learn MERN Stack",
+        deadline: "2026-10-01",
+        progress: 20,
+        completed: false
+    },
+    {
+        title: "Solve 100 DSA Problems",
+        deadline: "2026-09-15",
+        progress: 45,
+        completed: false
+    },
+    {
+        title: "Build Decision Journal",
+        deadline: "2026-11-01",
+        progress: 10,
+        completed: false
+    }
+];
 
 // ==========================
 // Console Output
@@ -38,25 +54,42 @@ console.log("===== Decision Journal =====");
 
 console.log("Application Name:", appName);
 
-console.log("User Details:", user);
+console.log("User Details:");
+console.log(user);
 
-console.log("Goal Details:", goal);
+console.log("---------------------------");
+
+console.log("Total Goals:", goals.length);
+
+console.log("---------------------------");
+
+console.log("Goal Titles:");
+
+goals.forEach(function (goal, index) {
+    console.log((index + 1) + ". " + goal.title);
+});
+
+console.log("---------------------------");
+
+console.log("Complete Goal Details:");
+
+console.log(goals);
 
 // ==========================
 // Functions
 // ==========================
 
-// Displays a welcome message
+// Welcome Button
 function showWelcomeMessage() {
     alert(`Welcome ${userName} to ${appName}!`);
 }
 
-// Displays a login message
+// Login Button
 function showLoginMessage() {
     alert("Login feature coming soon...");
 }
 
-// Displays a signup message
+// Signup Button
 function showSignupMessage() {
     alert("Signup feature coming soon...");
 }
