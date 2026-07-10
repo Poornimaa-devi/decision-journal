@@ -1,6 +1,6 @@
 // ==========================================
 // Decision Journal
-// Day 10 - Arrays and Objects
+// Day 11 - DOM Manipulation
 // ==========================================
 
 // ==========================
@@ -18,7 +18,7 @@ const user = {
     name: "Demo User",
     email: "demo@example.com",
     joinedOn: "2026-08-08",
-    totalGoals: 3
+    totalGoals: 4
 };
 
 // ==========================
@@ -28,20 +28,22 @@ const user = {
 const goals = [
     {
         title: "Learn MERN Stack",
-        deadline: "2026-10-01",
         progress: 20,
         completed: false
     },
     {
         title: "Solve 100 DSA Problems",
-        deadline: "2026-09-15",
         progress: 45,
         completed: false
     },
     {
         title: "Build Decision Journal",
-        deadline: "2026-11-01",
         progress: 10,
+        completed: false
+    },
+    {
+        title: "Complete AWS Certification",
+        progress: 60,
         completed: false
     }
 ];
@@ -50,48 +52,43 @@ const goals = [
 // Console Output
 // ==========================
 
-console.log("===== Decision Journal =====");
-
 console.log("Application Name:", appName);
-
-console.log("User Details:");
-console.log(user);
-
-console.log("---------------------------");
-
-console.log("Total Goals:", goals.length);
-
-console.log("---------------------------");
-
-console.log("Goal Titles:");
-
-goals.forEach(function (goal, index) {
-    console.log((index + 1) + ". " + goal.title);
-});
-
-console.log("---------------------------");
-
-console.log("Complete Goal Details:");
-
-console.log(goals);
+console.log("User:", user);
+console.log("Goals:", goals);
 
 // ==========================
 // Functions
 // ==========================
 
-// Welcome Button
 function showWelcomeMessage() {
     alert(`Welcome ${userName} to ${appName}!`);
 }
 
-// Login Button
 function showLoginMessage() {
     alert("Login feature coming soon...");
 }
 
-// Signup Button
 function showSignupMessage() {
     alert("Signup feature coming soon...");
+}
+
+// Display goals on webpage
+function displayGoals() {
+
+    const goalList = document.getElementById("goalList");
+
+    goals.forEach(function(goal) {
+
+        const goalItem = document.createElement("div");
+
+        goalItem.className = "goal-item";
+
+        goalItem.textContent = goal.title;
+
+        goalList.appendChild(goalItem);
+
+    });
+
 }
 
 // ==========================
@@ -115,5 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (signupBtn) {
         signupBtn.addEventListener("click", showSignupMessage);
     }
+
+    displayGoals();
 
 });
