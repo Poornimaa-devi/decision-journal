@@ -1,60 +1,12 @@
 // ==========================================
 // Decision Journal
-// Day 11 - DOM Manipulation
+// Day 12 - Forms & Validation
 // ==========================================
-
-// ==========================
-// Variables
-// ==========================
 
 const appName = "Decision Journal";
 let userName = "Guest";
 
-// ==========================
-// User Object
-// ==========================
-
-const user = {
-    name: "Demo User",
-    email: "demo@example.com",
-    joinedOn: "2026-08-08",
-    totalGoals: 4
-};
-
-// ==========================
-// Goals Array
-// ==========================
-
-const goals = [
-    {
-        title: "Learn MERN Stack",
-        progress: 20,
-        completed: false
-    },
-    {
-        title: "Solve 100 DSA Problems",
-        progress: 45,
-        completed: false
-    },
-    {
-        title: "Build Decision Journal",
-        progress: 10,
-        completed: false
-    },
-    {
-        title: "Complete AWS Certification",
-        progress: 60,
-        completed: false
-    }
-];
-
-// ==========================
-// Console Output
-// ==========================
-
-console.log("Application Name:", appName);
-console.log("User:", user);
-console.log("Goals:", goals);
+const goals = [];
 
 // ==========================
 // Functions
@@ -72,18 +24,23 @@ function showSignupMessage() {
     alert("Signup feature coming soon...");
 }
 
-// Display goals on webpage
 function displayGoals() {
 
     const goalList = document.getElementById("goalList");
 
-    goals.forEach(function(goal) {
+    goalList.innerHTML = "";
+
+    goals.forEach(function(goal){
 
         const goalItem = document.createElement("div");
 
         goalItem.className = "goal-item";
 
-        goalItem.textContent = goal.title;
+        goalItem.innerHTML = `
+            <h3>${goal.title}</h3>
+            <p>Deadline: ${goal.deadline}</p>
+            <p>Priority: ${goal.priority}</p>
+        `;
 
         goalList.appendChild(goalItem);
 
@@ -91,28 +48,58 @@ function displayGoals() {
 
 }
 
+function createGoal(event){
+
+    event.preventDefault();
+
+    const title = document.getElementById("goalTitle").value;
+
+    const deadline = document.getElementById("deadline").value;
+
+    const priority = document.getElementById("priority").value;
+
+    const goal = {
+
+        title,
+
+        deadline,
+
+        priority,
+
+        completed:false
+
+    };
+
+    goals.push(goal);
+
+    console.log(goals);
+
+    displayGoals();
+
+    document.getElementById("goalForm").reset();
+
+}
+
 // ==========================
 // Event Listeners
 // ==========================
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded",function(){
 
-    const getStartedBtn = document.getElementById("getStartedBtn");
-    const loginBtn = document.getElementById("loginBtn");
-    const signupBtn = document.getElementById("signupBtn");
+    document
+        .getElementById("getStartedBtn")
+        .addEventListener("click",showWelcomeMessage);
 
-    if (getStartedBtn) {
-        getStartedBtn.addEventListener("click", showWelcomeMessage);
-    }
+    document
+        .getElementById("loginBtn")
+        .addEventListener("click",showLoginMessage);
 
-    if (loginBtn) {
-        loginBtn.addEventListener("click", showLoginMessage);
-    }
+    document
+        .getElementById("signupBtn")
+        .addEventListener("click",showSignupMessage);
 
-    if (signupBtn) {
-        signupBtn.addEventListener("click", showSignupMessage);
-    }
-
-    displayGoals();
+    document
+        .getElementById("goalForm")
+        .addEventListener("submit",createGoal);
 
 });
