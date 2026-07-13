@@ -1,19 +1,62 @@
 // ==========================================
 // Decision Journal
-// Day 13 - Rendering & UI
+// Day 14 - Week 2 Review & Refactoring
 // ==========================================
+
+// ==========================
+// 1. Variables
+// ==========================
 
 const appName = "Decision Journal";
 let userName = "Guest";
 
 // ==========================
-// Goals Array (Source of Truth)
+// 2. Goals Array
 // ==========================
 
 const goals = [];
 
 // ==========================
-// Welcome Messages
+// 3. DOM Element Selection
+// ==========================
+
+let goalForm;
+let goalList;
+let getStartedBtn;
+let loginBtn;
+let signupBtn;
+
+// ==========================
+// 4. Event Listeners
+// ==========================
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    // Select DOM Elements
+    goalForm = document.getElementById("goalForm");
+    goalList = document.getElementById("goalList");
+
+    getStartedBtn = document.getElementById("getStartedBtn");
+    loginBtn = document.getElementById("loginBtn");
+    signupBtn = document.getElementById("signupBtn");
+
+    // Register Event Listeners
+    getStartedBtn.addEventListener("click", showWelcomeMessage);
+    loginBtn.addEventListener("click", showLoginMessage);
+    signupBtn.addEventListener("click", showSignupMessage);
+
+    goalForm.addEventListener("submit", createGoal);
+
+    // ==========================
+    // 6. Initial Render
+    // ==========================
+
+    renderGoals();
+
+});
+
+// ==========================
+// 5. Functions
 // ==========================
 
 function showWelcomeMessage() {
@@ -28,18 +71,10 @@ function showSignupMessage() {
     alert("Signup feature coming soon...");
 }
 
-// ==========================
-// Render Goals
-// ==========================
-
 function renderGoals() {
 
-    const goalList = document.getElementById("goalList");
-
-    // Clear old UI
     goalList.innerHTML = "";
 
-    // Generate UI from data
     goals.forEach(function (goal) {
 
         const goalCard = document.createElement("div");
@@ -56,13 +91,10 @@ function renderGoals() {
         `;
 
         goalList.appendChild(goalCard);
+
     });
 
 }
-
-// ==========================
-// Create Goal
-// ==========================
 
 function createGoal(event) {
 
@@ -84,42 +116,10 @@ function createGoal(event) {
         completed: false
     };
 
-    // Update data
     goals.push(newGoal);
 
-    console.log(goals);
-
-    // Re-render UI
     renderGoals();
 
-    // Clear form
-    document.getElementById("goalForm").reset();
+    goalForm.reset();
 
 }
-
-// ==========================
-// Event Listeners
-// ==========================
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    document
-        .getElementById("getStartedBtn")
-        .addEventListener("click", showWelcomeMessage);
-
-    document
-        .getElementById("loginBtn")
-        .addEventListener("click", showLoginMessage);
-
-    document
-        .getElementById("signupBtn")
-        .addEventListener("click", showSignupMessage);
-
-    document
-        .getElementById("goalForm")
-        .addEventListener("submit", createGoal);
-
-    // Initial render
-    renderGoals();
-
-});
