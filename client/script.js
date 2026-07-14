@@ -1,6 +1,6 @@
 // ==========================================
 // Decision Journal
-// Day 14 - Week 2 Review & Refactoring
+// Day 15 - Update Operation (CRUD)
 // ==========================================
 
 // ==========================
@@ -47,10 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     goalForm.addEventListener("submit", createGoal);
 
-    // ==========================
-    // 6. Initial Render
-    // ==========================
-
+    // Initial Render
     renderGoals();
 
 });
@@ -59,23 +56,30 @@ document.addEventListener("DOMContentLoaded", function () {
 // 5. Functions
 // ==========================
 
+// Welcome Button
 function showWelcomeMessage() {
     alert(`Welcome ${userName} to ${appName}!`);
 }
 
+// Login Button
 function showLoginMessage() {
     alert("Login feature coming soon...");
 }
 
+// Signup Button
 function showSignupMessage() {
     alert("Signup feature coming soon...");
 }
+
+// ==========================
+// Render Goals
+// ==========================
 
 function renderGoals() {
 
     goalList.innerHTML = "";
 
-    goals.forEach(function (goal) {
+    goals.forEach(function (goal, index) {
 
         const goalCard = document.createElement("div");
 
@@ -83,11 +87,18 @@ function renderGoals() {
 
         goalCard.innerHTML = `
             <h3>${goal.title}</h3>
+
             <p><strong>Deadline:</strong> ${goal.deadline}</p>
+
             <p><strong>Priority:</strong> ${goal.priority}</p>
+
             <p><strong>Status:</strong> ${
                 goal.completed ? "Completed ✅" : "In Progress ⏳"
             }</p>
+
+            <button class="edit-btn" onclick="editGoal(${index})">
+                Edit
+            </button>
         `;
 
         goalList.appendChild(goalCard);
@@ -95,6 +106,10 @@ function renderGoals() {
     });
 
 }
+
+// ==========================
+// Create Goal
+// ==========================
 
 function createGoal(event) {
 
@@ -110,10 +125,17 @@ function createGoal(event) {
     }
 
     const newGoal = {
-        title,
-        deadline,
-        priority,
+
+        id: Date.now(),
+
+        title: title,
+
+        deadline: deadline,
+
+        priority: priority,
+
         completed: false
+
     };
 
     goals.push(newGoal);
@@ -121,5 +143,31 @@ function createGoal(event) {
     renderGoals();
 
     goalForm.reset();
+
+}
+
+// ==========================
+// Update Goal
+// ==========================
+
+function editGoal(index) {
+
+    const newTitle = prompt(
+        "Enter new goal title:",
+        goals[index].title
+    );
+
+    if (newTitle === null) {
+        return;
+    }
+
+    if (newTitle.trim() === "") {
+        alert("Goal title cannot be empty.");
+        return;
+    }
+
+    goals[index].title = newTitle.trim();
+
+    renderGoals();
 
 }
