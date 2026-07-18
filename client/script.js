@@ -1,6 +1,6 @@
 // ==========================================
 // Decision Journal
-// Day 15 - Update Operation (CRUD)
+// Day 16 - Complete CRUD Operations
 // ==========================================
 
 // ==========================
@@ -99,6 +99,10 @@ function renderGoals() {
             <button class="edit-btn" onclick="editGoal(${index})">
                 Edit
             </button>
+
+            <button class="delete-btn" onclick="deleteGoal(${index})">
+                Delete
+            </button>
         `;
 
         goalList.appendChild(goalCard);
@@ -167,6 +171,26 @@ function editGoal(index) {
     }
 
     goals[index].title = newTitle.trim();
+
+    renderGoals();
+
+}
+
+// ==========================
+// Delete Goal
+// ==========================
+
+function deleteGoal(index) {
+
+    const confirmDelete = confirm(
+        "Are you sure you want to delete this goal?"
+    );
+
+    if (!confirmDelete) {
+        return;
+    }
+
+    goals.splice(index, 1);
 
     renderGoals();
 

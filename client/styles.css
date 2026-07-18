@@ -314,3 +314,19 @@ footer p:first-child {
 .edit-btn:hover{
     background:#d97706;
 }
+
+.delete-btn{
+    margin-left:10px;
+    margin-top:15px;
+    padding:10px 18px;
+    background:#dc2626;
+    color:white;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:15px;
+}
+
+.delete-btn:hover{
+    background:#b91c1c;
+}
