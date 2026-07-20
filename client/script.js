@@ -1,6 +1,6 @@
 // ==========================================
 // Decision Journal
-// Day 16 - Complete CRUD Operations
+// Day 17 - Local Storage & Complete CRUD
 // ==========================================
 
 // ==========================
@@ -14,7 +14,7 @@ let userName = "Guest";
 // 2. Goals Array
 // ==========================
 
-const goals = [];
+let goals = [];
 
 // ==========================
 // 3. DOM Element Selection
@@ -46,6 +46,9 @@ document.addEventListener("DOMContentLoaded", function () {
     signupBtn.addEventListener("click", showSignupMessage);
 
     goalForm.addEventListener("submit", createGoal);
+
+    // Load Saved Goals
+    loadGoals();
 
     // Initial Render
     renderGoals();
@@ -92,9 +95,9 @@ function renderGoals() {
 
             <p><strong>Priority:</strong> ${goal.priority}</p>
 
-            <p><strong>Status:</strong> ${
-                goal.completed ? "Completed ✅" : "In Progress ⏳"
-            }</p>
+            <p><strong>Status:</strong>
+                ${goal.completed ? "Completed ✅" : "In Progress ⏳"}
+            </p>
 
             <button class="edit-btn" onclick="editGoal(${index})">
                 Edit
@@ -144,6 +147,8 @@ function createGoal(event) {
 
     goals.push(newGoal);
 
+    saveGoals();
+
     renderGoals();
 
     goalForm.reset();
@@ -172,6 +177,8 @@ function editGoal(index) {
 
     goals[index].title = newTitle.trim();
 
+    saveGoals();
+
     renderGoals();
 
 }
@@ -192,6 +199,41 @@ function deleteGoal(index) {
 
     goals.splice(index, 1);
 
+    saveGoals();
+
     renderGoals();
+
+}
+
+// ==========================
+// Save Goals to Local Storage
+// ==========================
+
+function saveGoals() {
+
+    localStorage.setItem(
+        "decisionJournalGoals",
+        JSON.stringify(goals)
+    );
+
+}
+
+// ==========================
+// Load Goals from Local Storage
+// ==========================
+
+function loadGoals() {
+
+    const savedGoals = localStorage.getItem("decisionJournalGoals");
+
+    if (savedGoals) {
+
+        goals = JSON.parse(savedGoals);
+
+    } else {
+
+        goals = [];
+
+    }
 
 }
