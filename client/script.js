@@ -9,7 +9,8 @@
 
 const appName = "Decision Journal";
 let userName = "Guest";
-
+let searchInput;
+let priorityFilter;
 // ==========================
 // 2. Goals Array
 // ==========================
@@ -35,6 +36,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // Select DOM Elements
     goalForm = document.getElementById("goalForm");
     goalList = document.getElementById("goalList");
+    searchInput = document.getElementById("searchInput");
+    priorityFilter = document.getElementById("priorityFilter");
 
     getStartedBtn = document.getElementById("getStartedBtn");
     loginBtn = document.getElementById("loginBtn");
@@ -44,7 +47,8 @@ document.addEventListener("DOMContentLoaded", function () {
     getStartedBtn.addEventListener("click", showWelcomeMessage);
     loginBtn.addEventListener("click", showLoginMessage);
     signupBtn.addEventListener("click", showSignupMessage);
-
+    searchInput.addEventListener("input", renderGoals);
+    priorityFilter.addEventListener("change", renderGoals);
     goalForm.addEventListener("submit", createGoal);
 
     // Load Saved Goals
@@ -82,7 +86,26 @@ function renderGoals() {
 
     goalList.innerHTML = "";
 
-    goals.forEach(function (goal, index) {
+    const searchText = searchInput.value.toLowerCase();
+
+    const selectedPriority = priorityFilter.value;
+
+    const filteredGoals = goals.filter(function(goal){
+
+        const matchesSearch =
+            goal.title.toLowerCase().includes(searchText);
+
+        const matchesPriority =
+            selectedPriority === "All" ||
+            goal.priority === selectedPriority;
+
+        return matchesSearch && matchesPriority;
+
+    });
+
+    filteredGoals.forEach(function(goal){
+
+        const originalIndex = goals.indexOf(goal);
 
         const goalCard = document.createElement("div");
 
@@ -99,11 +122,13 @@ function renderGoals() {
                 ${goal.completed ? "Completed ✅" : "In Progress ⏳"}
             </p>
 
-            <button class="edit-btn" onclick="editGoal(${index})">
+            <button class="edit-btn"
+                onclick="editGoal(${originalIndex})">
                 Edit
             </button>
 
-            <button class="delete-btn" onclick="deleteGoal(${index})">
+            <button class="delete-btn"
+                onclick="deleteGoal(${originalIndex})">
                 Delete
             </button>
         `;
@@ -113,48 +138,6 @@ function renderGoals() {
     });
 
 }
-
-// ==========================
-// Create Goal
-// ==========================
-
-function createGoal(event) {
-
-    event.preventDefault();
-
-    const title = document.getElementById("goalTitle").value.trim();
-    const deadline = document.getElementById("deadline").value;
-    const priority = document.getElementById("priority").value;
-
-    if (title === "") {
-        alert("Please enter a goal title.");
-        return;
-    }
-
-    const newGoal = {
-
-        id: Date.now(),
-
-        title: title,
-
-        deadline: deadline,
-
-        priority: priority,
-
-        completed: false
-
-    };
-
-    goals.push(newGoal);
-
-    saveGoals();
-
-    renderGoals();
-
-    goalForm.reset();
-
-}
-
 // ==========================
 // Update Goal
 // ==========================
