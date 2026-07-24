@@ -1,25 +1,10 @@
-// ==========================================
-// Decision Journal
-// Day 17 - Local Storage & Complete CRUD
-// ==========================================
-
-// ==========================
-// 1. Variables
-// ==========================
 
 const appName = "Decision Journal";
 let userName = "Guest";
 let searchInput;
 let priorityFilter;
-// ==========================
-// 2. Goals Array
-// ==========================
-
+let sortOption;
 let goals = [];
-
-// ==========================
-// 3. DOM Element Selection
-// ==========================
 
 let goalForm;
 let goalList;
@@ -38,6 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
     goalList = document.getElementById("goalList");
     searchInput = document.getElementById("searchInput");
     priorityFilter = document.getElementById("priorityFilter");
+    sortOption = document.getElementById("sortOption");
 
     getStartedBtn = document.getElementById("getStartedBtn");
     loginBtn = document.getElementById("loginBtn");
@@ -50,6 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
     searchInput.addEventListener("input", renderGoals);
     priorityFilter.addEventListener("change", renderGoals);
     goalForm.addEventListener("submit", createGoal);
+    sortOption.addEventListener("change", renderGoals);
 
     // Load Saved Goals
     loadGoals();
@@ -86,22 +73,7 @@ function renderGoals() {
 
     goalList.innerHTML = "";
 
-    const searchText = searchInput.value.toLowerCase();
-
-    const selectedPriority = priorityFilter.value;
-
-    const filteredGoals = goals.filter(function(goal){
-
-        const matchesSearch =
-            goal.title.toLowerCase().includes(searchText);
-
-        const matchesPriority =
-            selectedPriority === "All" ||
-            goal.priority === selectedPriority;
-
-        return matchesSearch && matchesPriority;
-
-    });
+    const filteredGoals = applySearchFilterAndSort();
 
     filteredGoals.forEach(function(goal){
 
@@ -136,6 +108,79 @@ function renderGoals() {
         goalList.appendChild(goalCard);
 
     });
+
+}
+
+// ==========================
+// Search, Filter & Sort Goals
+// ==========================
+
+function applySearchFilterAndSort() {
+
+    const searchText = searchInput.value.toLowerCase();
+    const selectedPriority = priorityFilter.value;
+    const selectedSort = sortOption.value;
+
+    // Create a copy of the original array
+    let filteredGoals = [...goals];
+
+    // --------------------------
+    // Search
+    // --------------------------
+    filteredGoals = filteredGoals.filter(function(goal) {
+        return goal.title.toLowerCase().includes(searchText);
+    });
+
+    // --------------------------
+    // Filter
+    // --------------------------
+    if (selectedPriority !== "All") {
+
+        filteredGoals = filteredGoals.filter(function(goal) {
+            return goal.priority === selectedPriority;
+        });
+
+    }
+
+    // --------------------------
+    // Sort
+    // --------------------------
+    switch (selectedSort) {
+
+        case "titleAZ":
+            filteredGoals.sort(function(a, b) {
+                return a.title.localeCompare(b.title);
+            });
+            break;
+
+        case "titleZA":
+            filteredGoals.sort(function(a, b) {
+                return b.title.localeCompare(a.title);
+            });
+            break;
+
+        case "deadline":
+            filteredGoals.sort(function(a, b) {
+                return new Date(a.deadline) - new Date(b.deadline);
+            });
+            break;
+
+        case "priority":
+
+            const priorityOrder = {
+                High: 1,
+                Medium: 2,
+                Low: 3
+            };
+
+            filteredGoals.sort(function(a, b) {
+                return priorityOrder[a.priority] - priorityOrder[b.priority];
+            });
+
+            break;
+    }
+
+    return filteredGoals;
 
 }
 // ==========================
@@ -186,6 +231,48 @@ function deleteGoal(index) {
 
     renderGoals();
 
+}
+
+
+// ==========================
+// Create Goal
+// ==========================
+
+function createGoal(event) {
+
+    // Prevent page refresh
+    event.preventDefault();
+
+    // Read input values
+    const title = document.getElementById("goalTitle").value.trim();
+    const deadline = document.getElementById("deadline").value;
+    const priority = document.getElementById("priority").value;
+
+    // Validation
+    if (title === "") {
+        alert("Please enter a goal title.");
+        return;
+    }
+
+    // Create Goal Object
+    const newGoal = {
+        title: title,
+        deadline: deadline,
+        priority: priority,
+        completed: false
+    };
+
+    // Add goal to array
+    goals.push(newGoal);
+
+    // Save to Local Storage
+    saveGoals();
+
+    // Refresh UI
+    renderGoals();
+
+    // Clear form
+    goalForm.reset();
 }
 
 // ==========================
