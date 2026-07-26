@@ -12,6 +12,11 @@ let getStartedBtn;
 let loginBtn;
 let signupBtn;
 
+let totalGoalsElement;
+let completedGoalsElement;
+let pendingGoalsElement;
+let highPriorityGoalsElement;
+
 // ==========================
 // 4. Event Listeners
 // ==========================
@@ -38,11 +43,18 @@ document.addEventListener("DOMContentLoaded", function () {
     goalForm.addEventListener("submit", createGoal);
     sortOption.addEventListener("change", renderGoals);
 
+    totalGoalsElement = document.getElementById("totalGoals");
+    completedGoalsElement = document.getElementById("completedGoals");
+    pendingGoalsElement = document.getElementById("pendingGoals");
+    highPriorityGoalsElement = document.getElementById("highPriorityGoals");
+
     // Load Saved Goals
     loadGoals();
 
     // Initial Render
     renderGoals();
+
+    updateDashboard();
 
 });
 
@@ -209,6 +221,8 @@ function editGoal(index) {
 
     renderGoals();
 
+    updateDashboard();
+
 }
 
 // ==========================
@@ -230,6 +244,8 @@ function deleteGoal(index) {
     saveGoals();
 
     renderGoals();
+
+    updateDashboard();
 
 }
 
@@ -271,6 +287,9 @@ function createGoal(event) {
     // Refresh UI
     renderGoals();
 
+    //Update Dashboard
+    updateDashboard();
+
     // Clear form
     goalForm.reset();
 }
@@ -305,5 +324,32 @@ function loadGoals() {
         goals = [];
 
     }
+
+}
+
+// ==========================
+// Update Dashboard
+// ==========================
+
+function updateDashboard() {
+
+    const totalGoals = goals.length;
+
+    const completedGoals = goals.filter(function(goal) {
+        return goal.completed;
+    }).length;
+
+    const pendingGoals = goals.filter(function(goal) {
+        return !goal.completed;
+    }).length;
+
+    const highPriorityGoals = goals.filter(function(goal) {
+        return goal.priority === "High";
+    }).length;
+
+    totalGoalsElement.textContent = totalGoals;
+    completedGoalsElement.textContent = completedGoals;
+    pendingGoalsElement.textContent = pendingGoals;
+    highPriorityGoalsElement.textContent = highPriorityGoals;
 
 }
