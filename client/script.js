@@ -251,26 +251,65 @@ function deleteGoal(index) {
 
 
 // ==========================
-// Create Goal
+// Create Goal with Validation
 // ==========================
 
 function createGoal(event) {
 
-    // Prevent page refresh
     event.preventDefault();
 
-    // Read input values
     const title = document.getElementById("goalTitle").value.trim();
     const deadline = document.getElementById("deadline").value;
     const priority = document.getElementById("priority").value;
 
-    // Validation
+    // --------------------------
+    // Goal Title Validation
+    // --------------------------
+
     if (title === "") {
-        alert("Please enter a goal title.");
+        alert("Goal title cannot be empty.");
         return;
     }
 
+    if (title.length < 3) {
+        alert("Goal title must contain at least 3 characters.");
+        return;
+    }
+
+    // --------------------------
+    // Priority Validation
+    // --------------------------
+
+    const validPriorities = ["High", "Medium", "Low"];
+
+    if (!validPriorities.includes(priority)) {
+        alert("Please select a valid priority.");
+        return;
+    }
+
+    // --------------------------
+    // Deadline Validation
+    // --------------------------
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const selectedDate = new Date(deadline);
+
+    if (deadline === "") {
+        alert("Please select a deadline.");
+        return;
+    }
+
+    if (selectedDate < today) {
+        alert("Deadline cannot be earlier than today.");
+        return;
+    }
+
+    // --------------------------
     // Create Goal Object
+    // --------------------------
+
     const newGoal = {
         title: title,
         deadline: deadline,
@@ -278,21 +317,22 @@ function createGoal(event) {
         completed: false
     };
 
-    // Add goal to array
+    // --------------------------
+    // Save Goal
+    // --------------------------
+
     goals.push(newGoal);
 
-    // Save to Local Storage
     saveGoals();
 
-    // Refresh UI
     renderGoals();
 
-    //Update Dashboard
     updateDashboard();
 
-    // Clear form
     goalForm.reset();
+
 }
+
 
 // ==========================
 // Save Goals to Local Storage
