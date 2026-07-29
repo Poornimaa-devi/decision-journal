@@ -17,6 +17,7 @@ let completedGoalsElement;
 let pendingGoalsElement;
 let highPriorityGoalsElement;
 
+let notification;
 // ==========================
 // 4. Event Listeners
 // ==========================
@@ -47,6 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
     completedGoalsElement = document.getElementById("completedGoals");
     pendingGoalsElement = document.getElementById("pendingGoals");
     highPriorityGoalsElement = document.getElementById("highPriorityGoals");
+    notification = document.getElementById("notification");
 
     // Load Saved Goals
     loadGoals();
@@ -86,6 +88,10 @@ function renderGoals() {
     goalList.innerHTML = "";
 
     const filteredGoals = applySearchFilterAndSort();
+
+    if (filteredGoals.length === 0 && goals.length > 0) {
+    showNotification("ℹ No matching goals found.", "info");
+    }
 
     filteredGoals.forEach(function(goal){
 
@@ -223,6 +229,8 @@ function editGoal(index) {
 
     updateDashboard();
 
+    showNotification("✅ Goal updated successfully.", "success");
+
 }
 
 // ==========================
@@ -247,6 +255,8 @@ function deleteGoal(index) {
 
     updateDashboard();
 
+    showNotification("✅ Goal deleted successfully.", "success");
+
 }
 
 
@@ -267,12 +277,12 @@ function createGoal(event) {
     // --------------------------
 
     if (title === "") {
-        alert("Goal title cannot be empty.");
+        showNotification("❌ Goal title cannot be empty.", "error");
         return;
     }
 
     if (title.length < 3) {
-        alert("Goal title must contain at least 3 characters.");
+        showNotification("❌ Goal title must contain at least 3 characters.", "error");
         return;
     }
 
@@ -283,7 +293,7 @@ function createGoal(event) {
     const validPriorities = ["High", "Medium", "Low"];
 
     if (!validPriorities.includes(priority)) {
-        alert("Please select a valid priority.");
+        showNotification("❌ Please select a valid priority.", "error");
         return;
     }
 
@@ -297,12 +307,12 @@ function createGoal(event) {
     const selectedDate = new Date(deadline);
 
     if (deadline === "") {
-        alert("Please select a deadline.");
+        showNotification("❌ Please select a deadline.", "error");
         return;
     }
 
     if (selectedDate < today) {
-        alert("Deadline cannot be earlier than today.");
+        showNotification("❌ Deadline cannot be earlier than today.", "error");
         return;
     }
 
@@ -330,6 +340,8 @@ function createGoal(event) {
     updateDashboard();
 
     goalForm.reset();
+
+    showNotification("✅ Goal created successfully.", "success");
 
 }
 
@@ -391,5 +403,23 @@ function updateDashboard() {
     completedGoalsElement.textContent = completedGoals;
     pendingGoalsElement.textContent = pendingGoals;
     highPriorityGoalsElement.textContent = highPriorityGoals;
+
+}
+
+// ==========================
+// Show Notification
+// ==========================
+
+function showNotification(message, type) {
+
+    notification.textContent = message;
+
+    notification.className = "notification";
+
+    notification.classList.add(type);
+
+    setTimeout(function () {
+        notification.classList.add("hidden");
+    }, 3000);
 
 }
