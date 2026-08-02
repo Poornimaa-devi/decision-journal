@@ -90,10 +90,10 @@ function renderGoals() {
     const filteredGoals = applySearchFilterAndSort();
 
     if (filteredGoals.length === 0 && goals.length > 0) {
-    showNotification("ℹ No matching goals found.", "info");
+        showNotification("ℹ No matching goals found.", "info");
     }
 
-    filteredGoals.forEach(function(goal){
+    filteredGoals.forEach(function (goal) {
 
         const originalIndex = goals.indexOf(goal);
 
@@ -106,18 +106,35 @@ function renderGoals() {
 
             <p><strong>Deadline:</strong> ${goal.deadline}</p>
 
-            <p><strong>Priority:</strong> ${goal.priority}</p>
+            <p>
+                <strong>Priority:</strong>
+                <span class="priority-badge ${goal.priority.toLowerCase()}">
+                    ${goal.priority}
+                </span>
+            </p>
 
-            <p><strong>Status:</strong>
+            <p><strong>Progress:</strong> ${goal.progress}%</p>
+
+            <div class="progress-bar">
+                <div
+                    class="progress-fill"
+                    style="width: ${goal.progress}%;">
+                </div>
+            </div>
+
+            <p>
+                <strong>Status:</strong>
                 ${goal.completed ? "Completed ✅" : "In Progress ⏳"}
             </p>
 
-            <button class="edit-btn"
+            <button
+                class="edit-btn"
                 onclick="editGoal(${originalIndex})">
                 Edit
             </button>
 
-            <button class="delete-btn"
+            <button
+                class="delete-btn"
                 onclick="deleteGoal(${originalIndex})">
                 Delete
             </button>
@@ -207,6 +224,7 @@ function applySearchFilterAndSort() {
 
 function editGoal(index) {
 
+    // Edit Title
     const newTitle = prompt(
         "Enter new goal title:",
         goals[index].title
@@ -217,16 +235,35 @@ function editGoal(index) {
     }
 
     if (newTitle.trim() === "") {
-        alert("Goal title cannot be empty.");
+        showNotification("❌ Goal title cannot be empty.", "error");
         return;
     }
 
+    // Edit Progress
+    const newProgress = prompt(
+        "Enter progress (0 - 100):",
+        goals[index].progress
+    );
+
+    if (newProgress === null) {
+        return;
+    }
+
+    const progress = Number(newProgress);
+
+    if (isNaN(progress) || progress < 0 || progress > 100) {
+        showNotification("❌ Progress must be between 0 and 100.", "error");
+        return;
+    }
+
+    // Update Goal
     goals[index].title = newTitle.trim();
+    goals[index].progress = progress;
+    goals[index].completed = (progress === 100);
 
+    // Save & Refresh
     saveGoals();
-
     renderGoals();
-
     updateDashboard();
 
     showNotification("✅ Goal updated successfully.", "success");
@@ -271,6 +308,7 @@ function createGoal(event) {
     const title = document.getElementById("goalTitle").value.trim();
     const deadline = document.getElementById("deadline").value;
     const priority = document.getElementById("priority").value;
+    const progress = Number(document.getElementById("progress").value);
 
     // --------------------------
     // Goal Title Validation
@@ -301,18 +339,27 @@ function createGoal(event) {
     // Deadline Validation
     // --------------------------
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const selectedDate = new Date(deadline);
-
     if (deadline === "") {
         showNotification("❌ Please select a deadline.", "error");
         return;
     }
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const selectedDate = new Date(deadline);
+
     if (selectedDate < today) {
         showNotification("❌ Deadline cannot be earlier than today.", "error");
+        return;
+    }
+
+    // --------------------------
+    // Progress Validation
+    // --------------------------
+
+    if (isNaN(progress) || progress < 0 || progress > 100) {
+        showNotification("❌ Progress must be between 0 and 100.", "error");
         return;
     }
 
@@ -321,10 +368,19 @@ function createGoal(event) {
     // --------------------------
 
     const newGoal = {
+
+        id: Date.now(),
+
         title: title,
+
         deadline: deadline,
+
         priority: priority,
-        completed: false
+
+        progress: progress,
+
+        completed: progress === 100
+
     };
 
     // --------------------------
@@ -340,6 +396,8 @@ function createGoal(event) {
     updateDashboard();
 
     goalForm.reset();
+
+    document.getElementById("progress").value = 0;
 
     showNotification("✅ Goal created successfully.", "success");
 
