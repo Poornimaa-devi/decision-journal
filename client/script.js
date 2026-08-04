@@ -87,11 +87,49 @@ function renderGoals() {
 
     goalList.innerHTML = "";
 
+    // --------------------------
+    // Empty State - No Goals
+    // --------------------------
+
+    if (goals.length === 0) {
+
+        goalList.innerHTML = `
+            <div class="empty-state">
+                <h3>No Goals Available</h3>
+                <p>Create your first goal to get started!</p>
+            </div>
+        `;
+
+        return;
+    }
+
+    // --------------------------
+    // Search, Filter & Sort
+    // --------------------------
+
     const filteredGoals = applySearchFilterAndSort();
 
-    if (filteredGoals.length === 0 && goals.length > 0) {
+    // --------------------------
+    // No Matching Results
+    // --------------------------
+
+    if (filteredGoals.length === 0) {
+
+        goalList.innerHTML = `
+            <div class="empty-state">
+                <h3>No Matching Goals</h3>
+                <p>Try changing your search or filter.</p>
+            </div>
+        `;
+
         showNotification("ℹ No matching goals found.", "info");
+
+        return;
     }
+
+    // --------------------------
+    // Display Goals
+    // --------------------------
 
     filteredGoals.forEach(function (goal) {
 
@@ -224,6 +262,11 @@ function applySearchFilterAndSort() {
 
 function editGoal(index) {
 
+    if (!goals[index]) {
+    showNotification("❌ Goal not found.", "error");
+    return;
+    }
+
     // Edit Title
     const newTitle = prompt(
         "Enter new goal title:",
@@ -276,6 +319,11 @@ function editGoal(index) {
 
 function deleteGoal(index) {
 
+    if (!goals[index]) {
+    showNotification("❌ Goal not found.", "error");
+    return;
+    }
+
     const confirmDelete = confirm(
         "Are you sure you want to delete this goal?"
     );
@@ -302,6 +350,9 @@ function deleteGoal(index) {
 // ==========================
 
 function createGoal(event) {
+    
+    const submitButton = goalForm.querySelector("button[type='submit']");
+submitButton.disabled = true;
 
     event.preventDefault();
 
@@ -324,6 +375,8 @@ function createGoal(event) {
         return;
     }
 
+    submitButton.disabled = false;
+
     // --------------------------
     // Priority Validation
     // --------------------------
@@ -334,6 +387,8 @@ function createGoal(event) {
         showNotification("❌ Please select a valid priority.", "error");
         return;
     }
+
+    submitButton.disabled = false;
 
     // --------------------------
     // Deadline Validation
@@ -354,6 +409,8 @@ function createGoal(event) {
         return;
     }
 
+    submitButton.disabled = false;
+
     // --------------------------
     // Progress Validation
     // --------------------------
@@ -362,6 +419,8 @@ function createGoal(event) {
         showNotification("❌ Progress must be between 0 and 100.", "error");
         return;
     }
+
+    submitButton.disabled = false;
 
     // --------------------------
     // Create Goal Object
@@ -390,6 +449,8 @@ function createGoal(event) {
     goals.push(newGoal);
 
     saveGoals();
+
+    submitButton.disabled = false;
 
     renderGoals();
 
@@ -423,15 +484,34 @@ function saveGoals() {
 
 function loadGoals() {
 
-    const savedGoals = localStorage.getItem("decisionJournalGoals");
+    try {
 
-    if (savedGoals) {
+        const savedGoals = localStorage.getItem("decisionJournalGoals");
 
-        goals = JSON.parse(savedGoals);
+        if (savedGoals) {
 
-    } else {
+            goals = JSON.parse(savedGoals);
+
+            if (!Array.isArray(goals)) {
+                throw new Error("Invalid Local Storage data.");
+            }
+
+        } else {
+
+            goals = [];
+
+        }
+
+    } catch (error) {
 
         goals = [];
+
+        localStorage.removeItem("decisionJournalGoals");
+
+        showNotification(
+            "⚠ Invalid saved data found. Starting with an empty goal list.",
+            "warning"
+        );
 
     }
 
