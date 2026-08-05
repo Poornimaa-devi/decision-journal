@@ -1,0 +1,231 @@
+/* ==========================
+   Global Styles
+========================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f8fafc;
+    color: #1f2937;
+    line-height: 1.6;
+}
+
+/* ==========================
+   Header
+========================== */
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 80px;
+    background: #ffffff;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+header h1 {
+    color: #2563eb;
+    font-size: 32px;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #374151;
+    font-weight: 600;
+}
+
+nav a:hover {
+    color: #2563eb;
+}
+
+/* ==========================
+   Hero Section
+========================== */
+
+.hero {
+    text-align: center;
+    padding: 100px 20px;
+}
+
+.hero h2 {
+    font-size: 50px;
+    color: #1f2937;
+    margin-bottom: 25px;
+}
+
+.hero p {
+    max-width: 700px;
+    margin: auto;
+    font-size: 18px;
+    color: #6b7280;
+    margin-bottom: 40px;
+}
+
+/* ==========================
+   About Section
+========================== */
+
+.about {
+    background: white;
+    padding: 80px;
+    text-align: center;
+}
+
+.about h2 {
+    color: #2563eb;
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+.about p {
+    max-width: 850px;
+    margin: auto;
+    color: #6b7280;
+    font-size: 18px;
+}
+
+/* ==========================
+   Features Section
+========================== */
+
+.features {
+    padding: 80px;
+}
+
+.features h2 {
+    text-align: center;
+    color: #2563eb;
+    font-size: 36px;
+    margin-bottom: 50px;
+}
+
+.feature-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+/* ==========================
+   Goal Form Layout
+========================== */
+
+.goal-form-section {
+    background: white;
+    padding: 60px;
+}
+
+.goal-form-section h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #2563eb;
+}
+
+#goalForm {
+    max-width: 500px;
+    margin: auto;
+
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+/* ==========================
+   Search Section Layout
+========================== */
+
+.search-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+    margin: 30px 0;
+}
+
+/* ==========================
+   Goals Section
+========================== */
+
+.goals {
+    padding: 80px;
+    background-color: #f8fafc;
+}
+
+.goals h2 {
+    text-align: center;
+    color: #2563eb;
+    font-size: 36px;
+    margin-bottom: 40px;
+}
+
+#goalList {
+    max-width: 700px;
+    margin: auto;
+}
+
+/* ==========================
+   Dashboard Layout
+========================== */
+
+.dashboard {
+    width: 100%;
+    max-width: 1100px;
+    margin: 40px auto 0;
+    padding: 40px 32px;
+    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+    border: 1px solid rgba(37, 99, 235, 0.14);
+    border-radius: 28px;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.09);
+}
+
+.dashboard h2 {
+    text-align: center;
+    color: #1e40af;
+    font-size: 2.1rem;
+    margin-bottom: 28px;
+}
+
+.dashboard-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+/* ==========================
+   Footer
+========================== */
+
+footer {
+    background: #1f2937;
+    color: white;
+    text-align: center;
+    padding: 30px;
+}
+
+footer p:first-child {
+    font-weight: bold;
+    margin-bottom: 10px;
+}

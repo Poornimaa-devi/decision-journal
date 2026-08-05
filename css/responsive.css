@@ -1,0 +1,57 @@
+/*Mobile*/
+@media (max-width:768px){
+
+    header{
+        text-align:center;
+    }
+
+    nav{
+        display:flex;
+        flex-direction:column;
+        gap:10px;
+    }
+
+    .hero h2{
+        font-size:2rem;
+    }
+
+    .dashboard-container{
+        flex-direction:column;
+    }
+
+    .search-section{
+        flex-direction:column;
+    }
+
+    .search-section input,
+    .search-section select{
+        width:100%;
+    }
+
+    .goal-item{
+        width:95%;
+    }
+
+    .goal-item button{
+        width:100%;
+    }
+
+    footer{
+        text-align:center;
+    }
+
+}
+
+/* Tablet */
+
+@media (min-width:769px) and (max-width:1024px){
+
+    .dashboard-container{
+        justify-content:center;
+    }
+
+    .goal-item{
+        width:90%;
+    }
+
+}
