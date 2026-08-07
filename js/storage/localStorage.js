@@ -1,48 +1,45 @@
-function loadGoals() {
+
+import {
+    GOALS_STORAGE_KEY
+} from "../utils/constants.js";
+
+export function saveGoals(goals) {
+
+    localStorage.setItem(
+        GOALS_STORAGE_KEY,
+        JSON.stringify(goals)
+    );
+}
+
+export function loadGoals() {
+
+    const savedGoals =
+        localStorage.getItem(GOALS_STORAGE_KEY);
+
+    if (!savedGoals) {
+        return [];
+    }
 
     try {
 
-        const savedGoals = localStorage.getItem("decisionJournalGoals");
+        const parsedGoals =
+            JSON.parse(savedGoals);
+            
+        if (!Array.isArray(parsedGoals)) {
 
-        if (savedGoals) {
-
-            goals = JSON.parse(savedGoals);
-
-            if (!Array.isArray(goals)) {
-                throw new Error("Invalid Local Storage data.");
-            }
-
-        } else {
-
-            goals = [];
-
+            return [];
         }
+
+        return parsedGoals;
 
     } catch (error) {
 
-        goals = [];
-
-        localStorage.removeItem("decisionJournalGoals");
-
-        showNotification(
-            "⚠ Invalid saved data found. Starting with an empty goal list.",
-            "warning"
+        console.error(
+            "Failed to load goals:",
+            error
         );
 
+        return [];
     }
 
 }
-
-function saveGoals() {
-
-    localStorage.setItem(
-        "decisionJournalGoals",
-        JSON.stringify(goals)
-    );
-
-}
-
-
-
-
-
