@@ -29,6 +29,7 @@ import {
     showNotification
 } from "./ui/notifications.js";
 
+import { generateId } from "./utils/helpers.js";
 
 // ==========================================
 // Application Variables
@@ -239,7 +240,7 @@ function createGoal(event) {
 
     const newGoal = {
 
-        id: Date.now(),
+        id: generateId(),
 
         title: title,
 
