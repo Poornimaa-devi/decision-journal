@@ -1,5 +1,5 @@
 const express = require("express");
-const goalRoutes = require("./routes/goalRoutes");
+const progressRoutes = require("./routes/progressRoutes");
 const logger = require("./middleware/logger");
 
 const app = express();
@@ -16,7 +16,7 @@ app.get("/api", (req, res) => {
   res.send("Welcome to Decision Journal API");
 });
 
-app.use(goalRoutes);
+app.use(progressRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
