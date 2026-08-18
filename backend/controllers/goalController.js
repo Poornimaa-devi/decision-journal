@@ -76,6 +76,14 @@ function createGoal(req, res) {
     });
   }
 
+  const allowedPriorities = ["low", "medium", "high"];
+
+  if (priority && !allowedPriorities.includes(priority)) {
+    return res.status(400).json({
+      message: "Priority must be low, medium, or high",
+    });
+  }
+
   const newGoal = {
     id: nextId,
     title: title.trim(),
@@ -108,7 +116,18 @@ function updateGoal(req, res) {
   }
 
   if (deadline !== undefined) goal.deadline = deadline;
-  if (priority !== undefined) goal.priority = priority;
+
+  if (priority !== undefined) {
+    const allowedPriorities = ["low", "medium", "high"];
+
+    if (!allowedPriorities.includes(priority)) {
+      return res.status(400).json({
+        message: "Priority must be low, medium, or high",
+      });
+    }
+
+    goal.priority = priority;
+  }
 
   if (progress !== undefined) {
     const safeProgress = validateProgress(progress);
