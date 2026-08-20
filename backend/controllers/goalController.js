@@ -142,7 +142,7 @@ function updateGoal(req, res) {
   }
 
   if (completed !== undefined) {
-    goal.completed = Boolean(completed);
+    goal.completed = completed;
   }
 
   goal.completed = goal.progress >= 100;
