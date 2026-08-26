@@ -1,170 +1,60 @@
-let goals = [
-  {
-    id: 1,
-    title: "Learn React",
-    deadline: "2026-09-01",
-    priority: "high",
-    progress: 100,
-    completed: true,
-  },
-  {
-    id: 2,
-    title: "Build Node.js API",
-    deadline: "2026-09-10",
-    priority: "medium",
-    progress: 60,
-    completed: false,
-  },
-];
+const Goal = require("../models/Goals");
 
-let nextId = 3;
-
-function findGoalById(id) {
-  return goals.find((goal) => goal.id === Number(id));
+async function getAllGoals(req, res, next) {
+  try {
+    const goals = await Goal.find();
+    res.json(goals);
+  } catch (err) {
+    next(err);
+  }
 }
 
-function validateProgress(value) {
-  const progress = Number(value);
-
-  if (Number.isNaN(progress) || progress < 0 || progress > 100) {
-    return null;
+async function getGoalById(req, res, next) {
+  try {
+    const goal = await Goal.findById(req.params.id);
+    if (!goal) {
+      return res.status(404).json({ message: "Goal not found" });
+    }
+    res.json(goal);
+  } catch (err) {
+    next(err);
   }
-
-  return progress;
 }
 
-function getAllGoals(req, res) {
-  const { completed, priority } = req.query;
-
-  let filteredGoals = [...goals];
-
-  if (completed !== undefined) {
-    filteredGoals = filteredGoals.filter(
-      (goal) => goal.completed === (completed === "true")
-    );
+async function createGoal(req, res, next) {
+  try {
+    const newGoal = await Goal.create(req.body);
+    res.status(201).json(newGoal);
+  } catch (err) {
+    next(err);
   }
-
-  if (priority) {
-    filteredGoals = filteredGoals.filter((goal) => goal.priority === priority);
-  }
-
-  res.json(filteredGoals);
 }
 
-function getGoalById(req, res) {
-  const goal = findGoalById(req.params.id);
-
-  if (!goal) {
-    return res.status(404).json({ message: "Goal not found" });
-  }
-
-  res.json(goal);
-}
-
-function createGoal(req, res) {
-  const { title, deadline, priority, progress } = req.body;
-
-  if (!title || typeof title !== "string" || title.trim() === "") {
-    return res.status(400).json({ message: "Goal title is required" });
-  }
-
-  const safeProgress = validateProgress(progress ?? 0);
-
-  if (safeProgress === null) {
-    return res.status(400).json({
-      message: "Progress must be a number between 0 and 100",
+async function updateGoal(req, res, next) {
+  try {
+    const updatedGoal = await Goal.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
     });
+    if (!updatedGoal) {
+      return res.status(404).json({ message: "Goal not found" });
+    }
+    res.json(updatedGoal);
+  } catch (err) {
+    next(err);
   }
-
-  const allowedPriorities = ["low", "medium", "high"];
-
-  if (priority && !allowedPriorities.includes(priority)) {
-    return res.status(400).json({
-      message: "Priority must be low, medium, or high",
-    });
-  }
-
-  const newGoal = {
-    id: nextId,
-    title: title.trim(),
-    deadline: deadline || "",
-    priority: priority || "medium",
-    progress: safeProgress,
-    completed: safeProgress >= 100,
-  };
-
-  goals.push(newGoal);
-  nextId += 1;
-
-  return res.status(201).json(newGoal);
 }
 
-function updateGoal(req, res) {
-  const goal = findGoalById(req.params.id);
-
-  if (!goal) {
-    return res.status(404).json({ message: "Goal not found" });
-  }
-
-  const { title, deadline, priority, progress, completed } = req.body;
-
-  if (title !== undefined) {
-    if (typeof title !== "string" || title.trim() === "") {
-      return res.status(400).json({ message: "Goal title cannot be empty" });
+async function deleteGoal(req, res, next) {
+  try {
+    const deletedGoal = await Goal.findByIdAndDelete(req.params.id);
+    if (!deletedGoal) {
+      return res.status(404).json({ message: "Goal not found" });
     }
-    goal.title = title.trim();
+    res.json({ message: "Goal deleted", goal: deletedGoal });
+  } catch (err) {
+    next(err);
   }
-
-  if (deadline !== undefined) goal.deadline = deadline;
-
-  if (priority !== undefined) {
-    const allowedPriorities = ["low", "medium", "high"];
-
-    if (!allowedPriorities.includes(priority)) {
-      return res.status(400).json({
-        message: "Priority must be low, medium, or high",
-      });
-    }
-
-    goal.priority = priority;
-  }
-
-  if (progress !== undefined) {
-    const safeProgress = validateProgress(progress);
-
-    if (safeProgress === null) {
-      return res.status(400).json({
-        message: "Progress must be a number between 0 and 100",
-      });
-    }
-
-    goal.progress = safeProgress;
-  }
-
-  if (completed !== undefined) {
-    goal.completed = completed;
-  }
-
-  goal.completed = goal.progress >= 100;
-
-  return res.json(goal);
-}
-
-function deleteGoal(req, res) {
-  const goalIndex = goals.findIndex(
-    (goal) => goal.id === Number(req.params.id)
-  );
-
-  if (goalIndex === -1) {
-    return res.status(404).json({ message: "Goal not found" });
-  }
-
-  const deletedGoal = goals.splice(goalIndex, 1)[0];
-
-  return res.json({
-    message: "Goal deleted successfully",
-    goal: deletedGoal,
-  });
 }
 
 module.exports = {
