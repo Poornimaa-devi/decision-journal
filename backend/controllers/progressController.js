@@ -1,72 +1,61 @@
-let progressList = [
-  { id: 1, goalId: 1, value: 25, note: "Started working on it" },
-  { id: 2, goalId: 2, value: 50, note: "In progress" },
-];
+const Progress = require("../models/Progress");
 
-let nextId = 3;
-
-function getAllProgress(req, res) {
-  res.json(progressList);
+async function getAllProgress(req, res, next) {
+  try {
+    const progressList = await Progress.find();
+    res.json(progressList);
+  } catch (err) {
+    next(err);
+  }
 }
 
-function getProgressById(req, res) {
-  const id = Number(req.params.id);
-  const item = progressList.find((p) => p.id === id);
-
-  if (!item) {
-    return res.status(404).json({ message: "Progress not found" });
+async function getProgressById(req, res, next) {
+  try {
+    const progress = await Progress.findById(req.params.id);
+    if (!progress) {
+      return res.status(404).json({ message: "Progress not found" });
+    }
+    res.json(progress);
+  } catch (err) {
+    next(err);
   }
-
-  return res.json(item);
 }
 
-function createProgress(req, res) {
-  const { goalId, value, note } = req.body;
-
-  if (!goalId || value === undefined) {
-    return res.status(400).json({ message: "goalId and value are required" });
+async function createProgress(req, res, next) {
+  try {
+    const newProgress = await Progress.create(req.body);
+    res.status(201).json(newProgress);
+  } catch (err) {
+    next(err);
   }
-
-  const newProgress = {
-    id: nextId,
-    goalId: Number(goalId),
-    value: Number(value),
-    note: note || "",
-  };
-
-  progressList.push(newProgress);
-  nextId += 1;
-
-  return res.status(201).json(newProgress);
 }
 
-function updateProgress(req, res) {
-  const id = Number(req.params.id);
-  const item = progressList.find((p) => p.id === id);
-
-  if (!item) {
-    return res.status(404).json({ message: "Progress not found" });
+async function updateProgress(req, res, next) {
+  try {
+    const updatedProgress = await Progress.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!updatedProgress) {
+      return res.status(404).json({ message: "Progress not found" });
+    }
+    res.json(updatedProgress);
+  } catch (err) {
+    next(err);
   }
-
-  const { goalId, value, note } = req.body;
-
-  if (goalId !== undefined) item.goalId = Number(goalId);
-  if (value !== undefined) item.value = Number(value);
-  if (note !== undefined) item.note = note;
-
-  return res.json(item);
 }
 
-function deleteProgress(req, res) {
-  const id = Number(req.params.id);
-  const index = progressList.findIndex((p) => p.id === id);
-
-  if (index === -1) {
-    return res.status(404).json({ message: "Progress not found" });
+async function deleteProgress(req, res, next) {
+  try {
+    const deletedProgress = await Progress.findByIdAndDelete(req.params.id);
+    if (!deletedProgress) {
+      return res.status(404).json({ message: "Progress not found" });
+    }
+    res.json({ message: "Progress deleted", progress: deletedProgress });
+  } catch (err) {
+    next(err);
   }
-
-  const deleted = progressList.splice(index, 1)[0];
-  return res.json({ message: "Progress deleted", progress: deleted });
 }
 
 module.exports = {
