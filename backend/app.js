@@ -1,6 +1,7 @@
 const express = require("express");
 const progressRoutes = require("./routes/progressRoutes");
 const goalRoutes = require("./routes/goalRoutes");
+const authRoutes = require("./routes/authRoutes");
 const logger = require("./middleware/logger");
 const errorHandler = require("./middleware/errorHandler");
 
@@ -19,6 +20,7 @@ app.get("/api", (req, res) => {
 
 app.use(progressRoutes);
 app.use(goalRoutes);
+app.use(authRoutes);
 
 app.get("/api/test-error", (req, res) => {
   throw new Error("Test error");
