@@ -7,46 +7,28 @@ export function renderGoals(
     onDelete
 ) {
 
-    const goalList =
-        document.getElementById("goalList");
-    goalList.innerHTML = "";
+const goalList = document.getElementById("goalList");
+goalList.innerHTML = "";
 
-    if (goals.length === 0) {
-
-        goalList.innerHTML = `
+if (goals.length === 0) {
+     goalList.innerHTML = `
             <div class="empty-state">
                 <h3>No Goals Available</h3>
                 <p>Create your first goal to get started!</p>
             </div>
         `;
-
         return;
-    }
-    const searchText =
-        searchInput.value
-            .toLowerCase()
-            .trim();
-
-    const selectedPriority =
-        priorityFilter.value;
-
-    const selectedSort =
-        sortOption.value;
-
-    let filteredGoals =
-        [...goals];
-
-    filteredGoals =
-        filteredGoals.filter(function(goal) {
-
-            return goal.title
+}
+const searchText = searchInput.value.toLowerCase().trim();
+const selectedPriority = priorityFilter.value;
+const selectedSort = sortOption.value;
+let filteredGoals =[...goals];
+filteredGoals = filteredGoals.filter(function(goal) {
+           return goal.title
                 .toLowerCase()
                 .includes(searchText);
-
         });
-
     if (selectedPriority !== "All") {
-
         filteredGoals =
             filteredGoals.filter(function(goal) {
                 return goal.priority === selectedPriority;
@@ -54,33 +36,21 @@ export function renderGoals(
     }
 
     switch (selectedSort) {
-
         case "titleAZ":
-
             filteredGoals.sort(function(a, b) {
-
                 return a.title.localeCompare(b.title);
-
             });
-
             break;
-
         case "titleZA":
-
             filteredGoals.sort(function(a, b) {
-
                 return b.title.localeCompare(a.title);
-
             });
-
             break;
         case "deadline":
             filteredGoals.sort(function(a, b) {
                 return new Date(a.deadline) -
                        new Date(b.deadline);
-
             });
-
             break;
         case "priority":
             const priorityOrder = {
@@ -88,25 +58,20 @@ export function renderGoals(
                 Medium: 2,
                 Low: 3
             };
-
             filteredGoals.sort(function(a, b) {
-
                 return priorityOrder[a.priority] -
                        priorityOrder[b.priority];
             });
-
             break;
     }
 
     if (filteredGoals.length === 0) {
-
         goalList.innerHTML = `
             <div class="empty-state">
                 <h3>No Matching Goals</h3>
                 <p>Try changing your search or filter.</p>
             </div>
         `;
-
         return;
     }
 
