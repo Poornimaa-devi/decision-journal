@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Header from "./components/Header";
-import GoalCard from "./components/GoalCard";
-import GoalForm from "./components/GoalForm";
+import Header from "../components/Header";
+import GoalCard from "../components/GoalCard";
+import GoalForm from "../components/GoalForm";
 
 function App() {
   const [goals, setGoals] = useState([
