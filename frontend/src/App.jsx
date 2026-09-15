@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import GoalCard from "../components/GoalCard";
 import GoalForm from "../components/GoalForm";
@@ -8,6 +8,12 @@ function App() {
     { title: "Learn React Props", priority: "high", progress: 40 },
     { title: "Finish Backend Auth", priority: "medium", progress: 100 },
   ]);
+
+  console.log("App component is rendering");
+
+  useEffect(() => {
+    console.log("useEffect ran — this should appear only ONCE, after the first render");
+  }, []);
 
   function handleAddGoal(newGoal) {
     setGoals([...goals, { ...newGoal, progress: 0 }]);
