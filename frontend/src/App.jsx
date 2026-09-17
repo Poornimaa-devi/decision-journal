@@ -3,16 +3,34 @@ import Header from "../components/Header";
 import GoalCard from "../components/GoalCard";
 import GoalForm from "../components/GoalForm";
 
-function App() {
-  const [goals, setGoals] = useState([
-    { title: "Learn React Props", priority: "high", progress: 40 },
-    { title: "Finish Backend Auth", priority: "medium", progress: 100 },
-  ]);
+// ⚠️ TEMPORARY — will be replaced once a real login page exists
+const TEMP_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTlkOGNlZjExYWI3YjMyZjg0MDZkZDkiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpYXQiOjE3ODk2NjQ3MDQsImV4cCI6MTc4OTc1MTEwNH0.x8l9v73IV9lnai9ER_gG-81NBUqIRqeOJlhbg8_OxGs";
 
-  console.log("App component is rendering");
+function App() {
+  const [goals, setGoals] = useState([]);
 
   useEffect(() => {
-    console.log("useEffect ran — this should appear only ONCE, after the first render");
+    async function fetchGoals() {
+      try {
+        const response = await fetch("http://localhost:3000/api/goals", {
+          headers: {
+            Authorization: `Bearer ${TEMP_TOKEN}`,
+          },
+        });
+
+        if (!response.ok) {
+          console.error("Fetch failed with status:", response.status);
+          return;
+        }
+
+        const data = await response.json();
+        setGoals(data);
+      } catch (err) {
+        console.error("Network error:", err.message);
+      }
+    }
+
+    fetchGoals();
   }, []);
 
   function handleAddGoal(newGoal) {
@@ -23,9 +41,9 @@ function App() {
     <div>
       <Header />
       <GoalForm onAddGoal={handleAddGoal} />
-      {goals.map((goal, index) => (
+      {goals.map((goal) => (
         <GoalCard
-          key={index}
+          key={goal._id}
           title={goal.title}
           priority={goal.priority}
           progress={goal.progress}
