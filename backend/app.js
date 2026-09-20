@@ -4,8 +4,10 @@ const goalRoutes = require("./routes/goalRoutes");
 const authRoutes = require("./routes/authRoutes");
 const logger = require("./middleware/logger");
 const errorHandler = require("./middleware/errorHandler");
+const cors = require("cors");
 
 const app = express();
+app.use(cors());
 
 app.use(express.json());
 app.use(logger);

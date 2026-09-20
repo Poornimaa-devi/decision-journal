@@ -3,49 +3,7 @@ import Header from "../components/Header";
 import GoalCard from "../components/GoalCard";
 import GoalForm from "../components/GoalForm";
 
-const API_BASE_URL = "http://localhost:3000";
-const DEMO_EMAIL = "demo@decisionjournal.com";
-const DEMO_PASSWORD = "demo123456";
-const TOKEN_STORAGE_KEY = "decision-journal-token";
-
-async function ensureValidToken() {
-  const savedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
-  if (savedToken) {
-    return savedToken;
-  }
-
-  const signupResponse = await fetch(`${API_BASE_URL}/api/auth/signup`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      email: DEMO_EMAIL,
-      password: DEMO_PASSWORD,
-    }),
-  });
-
-  if (!signupResponse.ok && signupResponse.status !== 409) {
-    const errorData = await signupResponse.json().catch(() => ({}));
-    throw new Error(errorData.message || "Unable to create demo account");
-  }
-
-  const loginResponse = await fetch(`${API_BASE_URL}/api/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      email: DEMO_EMAIL,
-      password: DEMO_PASSWORD,
-    }),
-  });
-
-  const loginData = await loginResponse.json().catch(() => ({}));
-
-  if (!loginResponse.ok) {
-    throw new Error(loginData.message || "Login failed");
-  }
-
-  localStorage.setItem(TOKEN_STORAGE_KEY, loginData.token);
-  return loginData.token;
-}
+const TEMP_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTlkOGNlZjExYWI3YjMyZjg0MDZkZDkiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpYXQiOjE3ODk4ODA1NTksImV4cCI6MTc4OTk2Njk1OX0.Bbe8kVAn4zXOe50BBQbTOQ41L6cV6asZAmaV1kr9l9g";
 
 function App() {
   const [goals, setGoals] = useState([]);
@@ -55,19 +13,10 @@ function App() {
   useEffect(() => {
     async function fetchGoals() {
       try {
-        const token = await ensureValidToken();
-
-        const response = await fetch(`${API_BASE_URL}/api/goals`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const response = await fetch("http://localhost:3000/api/goals", {
+          headers: { Authorization: `Bearer ${TEMP_TOKEN}` },
         });
-
-        if (!response.ok) {
-          const data = await response.json().catch(() => ({}));
-          throw new Error(data.message || `Request failed with status ${response.status}`);
-        }
-
+        if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
         const data = await response.json();
         setGoals(data);
       } catch (err) {
@@ -76,12 +25,29 @@ function App() {
         setIsLoading(false);
       }
     }
-
     fetchGoals();
   }, []);
 
-  function handleAddGoal(newGoal) {
-    setGoals([...goals, { ...newGoal, progress: 0 }]);
+  async function handleAddGoal(newGoal) {
+    try {
+      const response = await fetch("http://localhost:3000/api/goals", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${TEMP_TOKEN}`,
+        },
+        body: JSON.stringify(newGoal),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to create goal: ${response.status}`);
+      }
+
+      const savedGoal = await response.json();
+      setGoals([...goals, savedGoal]);
+    } catch (err) {
+      setError(err.message);
+    }
   }
 
   return (
