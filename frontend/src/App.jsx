@@ -38,13 +38,36 @@ function App() {
         },
         body: JSON.stringify(newGoal),
       });
-
-      if (!response.ok) {
-        throw new Error(`Failed to create goal: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`Failed to create goal: ${response.status}`);
       const savedGoal = await response.json();
       setGoals([...goals, savedGoal]);
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function handleToggleComplete(goalId) {
+    const goalToToggle = goals.find((g) => g._id === goalId);
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/goals/${goalId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${TEMP_TOKEN}`,
+        },
+        body: JSON.stringify({ completed: !goalToToggle.completed }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to update goal: ${response.status}`);
+      }
+
+      const updatedGoal = await response.json();
+
+      setGoals(
+        goals.map((g) => (g._id === goalId ? updatedGoal : g))
+      );
     } catch (err) {
       setError(err.message);
     }
@@ -65,9 +88,12 @@ function App() {
         goals.map((goal) => (
           <GoalCard
             key={goal._id}
+            id={goal._id}
             title={goal.title}
             priority={goal.priority}
             progress={goal.progress}
+            completed={goal.completed}
+            onToggleComplete={handleToggleComplete}
           />
         ))
       )}
