@@ -3,7 +3,7 @@ import Header from "../components/Header";
 import GoalCard from "../components/GoalCard";
 import GoalForm from "../components/GoalForm";
 
-const TEMP_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTlkOGNlZjExYWI3YjMyZjg0MDZkZDkiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpYXQiOjE3ODk4ODA1NTksImV4cCI6MTc4OTk2Njk1OX0.Bbe8kVAn4zXOe50BBQbTOQ41L6cV6asZAmaV1kr9l9g";
+const TEMP_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTlkOGNlZjExYWI3YjMyZjg0MDZkZDkiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpYXQiOjE3OTAwMTI1MTQsImV4cCI6MTc5MDA5ODkxNH0.bw4KlVehdcyMWS-rKQ6TNQS1deZgAJJrfZbHaFHzmFU";
 
 function App() {
   const [goals, setGoals] = useState([]);
@@ -73,6 +73,25 @@ function App() {
     }
   }
 
+  async function handleDeleteGoal(goalId) {
+  try {
+    const response = await fetch(`http://localhost:3000/api/goals/${goalId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${TEMP_TOKEN}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to delete goal: ${response.status}`);
+    }
+
+    setGoals(goals.filter((g) => g._id !== goalId));
+    } catch (err) {
+    setError(err.message);
+    }
+  }
+
   return (
     <div>
       <Header />
@@ -94,6 +113,7 @@ function App() {
             progress={goal.progress}
             completed={goal.completed}
             onToggleComplete={handleToggleComplete}
+            onDeleteGoal={handleDeleteGoal}
           />
         ))
       )}
