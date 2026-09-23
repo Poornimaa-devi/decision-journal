@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import Header from "../components/Header";
-import GoalCard from "../components/GoalCard";
-import GoalForm from "../components/GoalForm";
+import Header from "./components/Header";
+import GoalForm from "./components/GoalForm";
+import Dashboard from "./components/Dashboard";
 
 const TEMP_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTlkOGNlZjExYWI3YjMyZjg0MDZkZDkiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpYXQiOjE3OTAwMTI1MTQsImV4cCI6MTc5MDA5ODkxNH0.bw4KlVehdcyMWS-rKQ6TNQS1deZgAJJrfZbHaFHzmFU";
 
@@ -48,7 +48,6 @@ function App() {
 
   async function handleToggleComplete(goalId) {
     const goalToToggle = goals.find((g) => g._id === goalId);
-
     try {
       const response = await fetch(`http://localhost:3000/api/goals/${goalId}`, {
         method: "PATCH",
@@ -58,37 +57,24 @@ function App() {
         },
         body: JSON.stringify({ completed: !goalToToggle.completed }),
       });
-
-      if (!response.ok) {
-        throw new Error(`Failed to update goal: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`Failed to update goal: ${response.status}`);
       const updatedGoal = await response.json();
-
-      setGoals(
-        goals.map((g) => (g._id === goalId ? updatedGoal : g))
-      );
+      setGoals(goals.map((g) => (g._id === goalId ? updatedGoal : g)));
     } catch (err) {
       setError(err.message);
     }
   }
 
   async function handleDeleteGoal(goalId) {
-  try {
-    const response = await fetch(`http://localhost:3000/api/goals/${goalId}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${TEMP_TOKEN}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to delete goal: ${response.status}`);
-    }
-
-    setGoals(goals.filter((g) => g._id !== goalId));
+    try {
+      const response = await fetch(`http://localhost:3000/api/goals/${goalId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${TEMP_TOKEN}` },
+      });
+      if (!response.ok) throw new Error(`Failed to delete goal: ${response.status}`);
+      setGoals(goals.filter((g) => g._id !== goalId));
     } catch (err) {
-    setError(err.message);
+      setError(err.message);
     }
   }
 
@@ -101,21 +87,12 @@ function App() {
         <p>Loading goals...</p>
       ) : error ? (
         <p>Something went wrong: {error}</p>
-      ) : goals.length === 0 ? (
-        <p>No goals yet. Add your first one above!</p>
       ) : (
-        goals.map((goal) => (
-          <GoalCard
-            key={goal._id}
-            id={goal._id}
-            title={goal.title}
-            priority={goal.priority}
-            progress={goal.progress}
-            completed={goal.completed}
-            onToggleComplete={handleToggleComplete}
-            onDeleteGoal={handleDeleteGoal}
-          />
-        ))
+        <Dashboard
+          goals={goals}
+          onToggleComplete={handleToggleComplete}
+          onDeleteGoal={handleDeleteGoal}
+        />
       )}
     </div>
   );
