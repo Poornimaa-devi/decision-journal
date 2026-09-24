@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import Header from "./components/Header";
-import GoalForm from "./components/GoalForm";
-import Dashboard from "./components/Dashboard";
+import Header from "../components/Header";
+import GoalForm from "../components/GoalForm";
+import Dashboard from "../components/Dashboard";
 
-const TEMP_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTlkOGNlZjExYWI3YjMyZjg0MDZkZDkiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpYXQiOjE3OTAwMTI1MTQsImV4cCI6MTc5MDA5ODkxNH0.bw4KlVehdcyMWS-rKQ6TNQS1deZgAJJrfZbHaFHzmFU";
+const TEMP_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTlkOGNlZjExYWI3YjMyZjg0MDZkZDkiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpYXQiOjE3OTAxODI4MTQsImV4cCI6MTc5MDI2OTIxNH0.og9tfs1InTo_v1ksgcLJ_a5omi-aSa03Ga-QCciyszk";
 
 function App() {
   const [goals, setGoals] = useState([]);

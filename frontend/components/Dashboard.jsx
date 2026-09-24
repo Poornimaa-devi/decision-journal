@@ -1,4 +1,4 @@
-import GoalCard from "../GoalCard";
+import GoalCard from "./GoalCard";
 
 function Dashboard({ goals, onToggleComplete, onDeleteGoal }) {
   const totalGoals = goals.length;
