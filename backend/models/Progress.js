@@ -2,9 +2,10 @@ const mongoose = require("mongoose");
 
 const progressSchema = new mongoose.Schema(
   {
-    goalId: {
-      type: String,
-      required: [true, "goalId is required"],
+    goal: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Goal",
+      required: [true, "A linked goal is required"],
     },
     value: {
       type: Number,
