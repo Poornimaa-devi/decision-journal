@@ -22,6 +22,11 @@ const goalSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    decision: {
+       type: mongoose.Schema.Types.ObjectId,
+       ref: "Decision",
+       default: null,
+    },
   },
   { timestamps: true }
 );
