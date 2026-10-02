@@ -6,6 +6,7 @@ const logger = require("./middleware/logger");
 const errorHandler = require("./middleware/errorHandler");
 const cors = require("cors");
 const decisionRoutes = require("./routes/decisionRoutes");
+const milestoneRoutes = require("./routes/milestoneRoutes");
 
 const app = express();
 app.use(cors());
@@ -13,6 +14,7 @@ app.use(cors());
 app.use(express.json());
 app.use(logger);
 app.use(decisionRoutes);
+app.use(milestoneRoutes);
 
 app.get("/", (req, res) => {
   res.send("Decision Journal API is running");
