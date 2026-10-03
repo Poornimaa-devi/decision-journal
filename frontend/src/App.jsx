@@ -3,7 +3,7 @@ import Header from "../components/Header";
 import GoalForm from "../components/GoalForm";
 import Dashboard from "../components/Dashboard";
 
-const TEMP_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkM2M3YWRkOGNmM2Q0ZTEwN2QyMjEiLCJlbWFpbCI6InBvb3JuaW1hYUBnbWFpbC5jb20iLCJpYXQiOjE3OTA4MzE5ODMsImV4cCI6MTc5MDkxODM4M30.hQJ_Os3NY4Z0X2_CIOy1AqviDdeNOOUQhVVA1czMLaU";
+const TEMP_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkM2M3YWRkOGNmM2Q0ZTEwN2QyMjEiLCJlbWFpbCI6InBvb3JuaW1hYUBnbWFpbC5jb20iLCJpYXQiOjE3OTEwMjExODMsImV4cCI6MTc5MTEwNzU4M30.rvh9N4HU7ifX4QFhwt_iS-nGZWJoI_vOHdnJRwBe0B0";
 
 function App() {
   const [goals, setGoals] = useState([]);
