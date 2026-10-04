@@ -3,30 +3,36 @@ import Header from "../components/Header";
 import GoalForm from "../components/GoalForm";
 import Dashboard from "../components/Dashboard";
 
-const TEMP_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkM2M3YWRkOGNmM2Q0ZTEwN2QyMjEiLCJlbWFpbCI6InBvb3JuaW1hYUBnbWFpbC5jb20iLCJpYXQiOjE3OTEwMjExODMsImV4cCI6MTc5MTEwNzU4M30.rvh9N4HU7ifX4QFhwt_iS-nGZWJoI_vOHdnJRwBe0B0";
+
+const TEMP_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkM2M3YWRkOGNmM2Q0ZTEwN2QyMjEiLCJlbWFpbCI6InBvb3JuaW1hYUBnbWFpbC5jb20iLCJpYXQiOjE3OTExMjg1NTUsImV4cCI6MTc5MTIxNDk1NX0.cx3OiePNEyF5eV_2vGa9VXIm7LzI2IcmLWg3S4HVDDw";
 
 function App() {
   const [goals, setGoals] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    async function fetchGoals() {
-      try {
-        const response = await fetch("http://localhost:3000/api/goals", {
-          headers: { Authorization: `Bearer ${TEMP_TOKEN}` },
-        });
-        if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
-        const data = await response.json();
-        setGoals(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
+  async function fetchGoals() {
+    try {
+      const url = searchTerm
+        ? `http://localhost:3000/api/goals?search=${encodeURIComponent(searchTerm)}`
+        : "http://localhost:3000/api/goals";
+
+      const response = await fetch(url, {
+        headers: { Authorization: `Bearer ${TEMP_TOKEN}` },
+      });
+      if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
+      const data = await response.json();
+      setGoals(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
-    fetchGoals();
-  }, []);
+  }
+  fetchGoals();
+}, [searchTerm]);
 
   async function handleAddGoal(newGoal) {
     try {
@@ -79,23 +85,30 @@ function App() {
   }
 
   return (
-    <div>
-      <Header />
-      <GoalForm onAddGoal={handleAddGoal} />
+  <div>
+    <Header />
+    <GoalForm onAddGoal={handleAddGoal} />
 
-      {isLoading ? (
-        <p>Loading goals...</p>
-      ) : error ? (
-        <p>Something went wrong: {error}</p>
-      ) : (
-        <Dashboard
-          goals={goals}
-          onToggleComplete={handleToggleComplete}
-          onDeleteGoal={handleDeleteGoal}
-        />
-      )}
-    </div>
-  );
+    <input
+      type="text"
+      placeholder="Search goals..."
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+    />
+
+    {isLoading ? (
+      <p>Loading goals...</p>
+    ) : error ? (
+      <p>Something went wrong: {error}</p>
+    ) : (
+      <Dashboard
+        goals={goals}
+        onToggleComplete={handleToggleComplete}
+        onDeleteGoal={handleDeleteGoal}
+      />
+    )}
+  </div>
+);
 }
 
 export default App;

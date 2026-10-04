@@ -2,7 +2,13 @@ const Goal = require("../models/Goals");
 
 async function getAllGoals(req, res, next) {
   try {
-    const goals = await Goal.find().populate("decision", "title");
+    const { search } = req.query;
+
+    const filter = search
+      ? { title: { $regex: search, $options: "i" } }
+      : {};
+
+    const goals = await Goal.find(filter).populate("decision", "title");
     res.json(goals);
   } catch (err) {
     next(err);
