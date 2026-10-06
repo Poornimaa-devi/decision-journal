@@ -4,20 +4,25 @@ import GoalForm from "../components/GoalForm";
 import Dashboard from "../components/Dashboard";
 
 
-const TEMP_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkM2M3YWRkOGNmM2Q0ZTEwN2QyMjEiLCJlbWFpbCI6InBvb3JuaW1hYUBnbWFpbC5jb20iLCJpYXQiOjE3OTExMjg1NTUsImV4cCI6MTc5MTIxNDk1NX0.cx3OiePNEyF5eV_2vGa9VXIm7LzI2IcmLWg3S4HVDDw";
+const TEMP_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkM2M3YWRkOGNmM2Q0ZTEwN2QyMjEiLCJlbWFpbCI6InBvb3JuaW1hYUBnbWFpbC5jb20iLCJpYXQiOjE3OTEyOTMxOTEsImV4cCI6MTc5MTM3OTU5MX0.3Dv1cA1PUk1oFFuhfyjsfoTi2ONtsQsssW3DLI_EA_Y";
 
 function App() {
   const [goals, setGoals] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
   async function fetchGoals() {
     try {
-      const url = searchTerm
-        ? `http://localhost:3000/api/goals?search=${encodeURIComponent(searchTerm)}`
-        : "http://localhost:3000/api/goals";
+      const params = new URLSearchParams();
+      if (searchTerm) params.append("search", searchTerm);
+      if (priorityFilter) params.append("priority", priorityFilter);
+      if (sortBy) params.append("sort", sortBy);
+
+      const url = `http://localhost:3000/api/goals?${params.toString()}`;
 
       const response = await fetch(url, {
         headers: { Authorization: `Bearer ${TEMP_TOKEN}` },
@@ -32,7 +37,8 @@ function App() {
     }
   }
   fetchGoals();
-}, [searchTerm]);
+}, [searchTerm, priorityFilter, sortBy]);
+
 
   async function handleAddGoal(newGoal) {
     try {
@@ -95,6 +101,18 @@ function App() {
       value={searchTerm}
       onChange={(e) => setSearchTerm(e.target.value)}
     />
+    <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
+    <option value="">All priorities</option>
+    <option value="low">Low</option>
+    <option value="medium">Medium</option>
+    <option value="high">High</option>
+    </select>
+
+    <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+    <option value="newest">Newest first</option>
+    <option value="oldest">Oldest first</option>
+    <option value="progress">By progress</option>
+    </select>
 
     {isLoading ? (
       <p>Loading goals...</p>

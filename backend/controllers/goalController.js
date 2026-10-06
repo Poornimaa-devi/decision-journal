@@ -2,13 +2,28 @@ const Goal = require("../models/Goals");
 
 async function getAllGoals(req, res, next) {
   try {
-    const { search } = req.query;
+    const { search, priority, completed, sort } = req.query;
 
-    const filter = search
-      ? { title: { $regex: search, $options: "i" } }
-      : {};
+    const filter = {};
 
-    const goals = await Goal.find(filter).populate("decision", "title");
+    if (search) {
+      filter.title = { $regex: search, $options: "i" };
+    }
+    if (priority) {
+      filter.priority = priority;
+    }
+    if (completed !== undefined) {
+      filter.completed = completed === "true";
+    }
+
+    const sortOptions = {
+      progress: "progress",
+      newest: "-createdAt",
+      oldest: "createdAt",
+    };
+    const sortBy = sortOptions[sort] || "-createdAt";
+
+    const goals = await Goal.find(filter).sort(sortBy).populate("decision", "title");
     res.json(goals);
   } catch (err) {
     next(err);
