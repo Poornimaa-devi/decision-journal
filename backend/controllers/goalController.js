@@ -80,10 +80,42 @@ async function deleteGoal(req, res, next) {
   }
 }
 
+async function getGoalAnalytics(req, res, next) {
+  try {
+    const byPriority = await Goal.aggregate([
+      {
+        $group: {
+          _id: "$priority",
+          count: { $sum: 1 },
+          avgProgress: { $avg: "$progress" },
+        },
+      },
+    ]);
+
+    const overall = await Goal.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalGoals: { $sum: 1 },
+          completedGoals: { $sum: { $cond: ["$completed", 1, 0] } },
+        },
+      },
+    ]);
+
+    res.json({
+      byPriority,
+      overall: overall[0] || { totalGoals: 0, completedGoals: 0 },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getAllGoals,
   getGoalById,
   createGoal,
   updateGoal,
   deleteGoal,
+  getGoalAnalytics,
 };

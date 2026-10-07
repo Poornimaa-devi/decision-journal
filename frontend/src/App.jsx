@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import GoalForm from "../components/GoalForm";
 import Dashboard from "../components/Dashboard";
+import Analytics from "../components/Analytics";
 
 
-const TEMP_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkM2M3YWRkOGNmM2Q0ZTEwN2QyMjEiLCJlbWFpbCI6InBvb3JuaW1hYUBnbWFpbC5jb20iLCJpYXQiOjE3OTEyOTMxOTEsImV4cCI6MTc5MTM3OTU5MX0.3Dv1cA1PUk1oFFuhfyjsfoTi2ONtsQsssW3DLI_EA_Y";
+const TEMP_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkM2M3YWRkOGNmM2Q0ZTEwN2QyMjEiLCJlbWFpbCI6InBvb3JuaW1hYUBnbWFpbC5jb20iLCJpYXQiOjE3OTEzNTI2MTAsImV4cCI6MTc5MTQzOTAxMH0.PdISky8gku17SAJnvXOTQkZfZ_M85i15V86_lQeTGJY";
 
 function App() {
   const [goals, setGoals] = useState([]);
@@ -93,7 +94,15 @@ function App() {
   return (
   <div>
     <Header />
+     <Analytics />
     <GoalForm onAddGoal={handleAddGoal} />
+
+    <input
+      type="text"
+      placeholder="Search goals..."
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+    />
 
     <input
       type="text"
