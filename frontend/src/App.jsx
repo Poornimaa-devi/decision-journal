@@ -3,9 +3,8 @@ import Header from "../components/Header";
 import GoalForm from "../components/GoalForm";
 import Dashboard from "../components/Dashboard";
 import Analytics from "../components/Analytics";
+import { TEMP_TOKEN } from "../config";
 
-
-const TEMP_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkM2M3YWRkOGNmM2Q0ZTEwN2QyMjEiLCJlbWFpbCI6InBvb3JuaW1hYUBnbWFpbC5jb20iLCJpYXQiOjE3OTEzNTI2MTAsImV4cCI6MTc5MTQzOTAxMH0.PdISky8gku17SAJnvXOTQkZfZ_M85i15V86_lQeTGJY";
 
 function App() {
   const [goals, setGoals] = useState([]);

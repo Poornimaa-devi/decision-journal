@@ -5,11 +5,15 @@ const {
   createDecision,
   updateDecision,
   deleteDecision,
+  getDecisionAnalytics,
 } = require("../controllers/decisionController");
 const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
+router.get("/api/decisions", authMiddleware, getAllDecisions);
+router.get("/api/decisions/analytics", authMiddleware, getDecisionAnalytics);
+router.get("/api/decisions/:id", authMiddleware, getDecisionById);
 router.get("/api/decisions", authMiddleware, getAllDecisions);
 router.get("/api/decisions/:id", authMiddleware, getDecisionById);
 router.post("/api/decisions", authMiddleware, createDecision);

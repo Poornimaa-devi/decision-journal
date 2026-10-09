@@ -58,10 +58,40 @@ async function deleteDecision(req, res, next) {
   }
 }
 
+async function getDecisionAnalytics(req, res, next) {
+  try {
+    const byStatus = await Decision.aggregate([
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const overall = await Decision.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalDecisions: { $sum: 1 },
+        },
+      },
+    ]);
+
+    res.json({
+      byStatus,
+      overall: overall[0] || { totalDecisions: 0 },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getAllDecisions,
   getDecisionById,
   createDecision,
   updateDecision,
   deleteDecision,
+  getDecisionAnalytics
 };
