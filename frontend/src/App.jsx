@@ -4,6 +4,7 @@ import GoalForm from "../components/GoalForm";
 import Dashboard from "../components/Dashboard";
 import Analytics from "../components/Analytics";
 import { TEMP_TOKEN } from "../config";
+import Profile from "../components/Profile";
 
 
 function App() {
@@ -93,6 +94,7 @@ function App() {
   return (
   <div>
     <Header />
+     <Profile />
      <Analytics />
     <GoalForm onAddGoal={handleAddGoal} />
 
