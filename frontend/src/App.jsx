@@ -3,7 +3,7 @@ import Header from "../components/Header";
 import GoalForm from "../components/GoalForm";
 import Dashboard from "../components/Dashboard";
 import Analytics from "../components/Analytics";
-import { TEMP_TOKEN } from "../config";
+import { TEMP_TOKEN } from "./config";
 import Profile from "../components/Profile";
 
 

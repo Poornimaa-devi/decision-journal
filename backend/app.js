@@ -8,6 +8,7 @@ const cors = require("cors");
 const decisionRoutes = require("./routes/decisionRoutes");
 const milestoneRoutes = require("./routes/milestoneRoutes");
 const userRoutes = require("./routes/userRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 const app = express();
 app.use(cors());
@@ -33,6 +34,8 @@ app.use(authRoutes);
 app.get("/api/test-error", (req, res) => {
   throw new Error("Test error");
 });
+
+app.use(notificationRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
