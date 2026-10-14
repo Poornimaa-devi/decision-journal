@@ -27,6 +27,12 @@ const goalSchema = new mongoose.Schema(
        ref: "Decision",
        default: null,
     },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "Owner is required"],
+      index: true,
+    },
   },
   { timestamps: true }
 );

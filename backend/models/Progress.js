@@ -18,6 +18,12 @@ const progressSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "Owner is required"],
+      index: true,
+    },
   },
   { timestamps: true }
 );

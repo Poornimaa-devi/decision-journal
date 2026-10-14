@@ -22,6 +22,12 @@ const reflectionSchema = new mongoose.Schema(
       required: [true, "Reflection content is required"],
       trim: true,
     },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "Owner is required"],
+      index: true,
+    },
   },
   { timestamps: true }
 );
