@@ -1,8 +1,12 @@
 const Progress = require("../models/Progress");
+const Goal = require("../models/Goals");
 
 async function getAllProgress(req, res, next) {
   try {
-    const progressList = await Progress.find().populate("goal", "title");
+    const progressList = await Progress.find({ user: req.user.userId }).populate(
+      "goal",
+      "title"
+    );
     res.json(progressList);
   } catch (err) {
     next(err);
@@ -11,9 +15,10 @@ async function getAllProgress(req, res, next) {
 
 async function getProgressByGoal(req, res, next) {
   try {
-    const progressList = await Progress.find({ goal: req.params.goalId }).sort({
-      createdAt: -1,
-    });
+    const progressList = await Progress.find({
+      goal: req.params.goalId,
+      user: req.user.userId,
+    }).sort({ createdAt: -1 });
     res.json(progressList);
   } catch (err) {
     next(err);
@@ -22,7 +27,10 @@ async function getProgressByGoal(req, res, next) {
 
 async function getProgressById(req, res, next) {
   try {
-    const progress = await Progress.findById(req.params.id).populate("goal", "title");
+    const progress = await Progress.findOne({
+      _id: req.params.id,
+      user: req.user.userId,
+    }).populate("goal", "title");
     if (!progress) {
       return res.status(404).json({ message: "Progress not found" });
     }
@@ -34,7 +42,24 @@ async function getProgressById(req, res, next) {
 
 async function createProgress(req, res, next) {
   try {
-    const newProgress = await Progress.create(req.body);
+    const { user, ...data } = req.body;
+
+    if (!data.goal) {
+      return res.status(400).json({ message: "goal is required" });
+    }
+
+    const ownsGoal = await Goal.findOne({
+      _id: data.goal,
+      user: req.user.userId,
+    });
+    if (!ownsGoal) {
+      return res.status(404).json({ message: "Goal not found" });
+    }
+
+    const newProgress = await Progress.create({
+      ...data,
+      user: req.user.userId,
+    });
     await newProgress.populate("goal", "title");
     res.status(201).json(newProgress);
   } catch (err) {
@@ -44,11 +69,15 @@ async function createProgress(req, res, next) {
 
 async function updateProgress(req, res, next) {
   try {
-    const updatedProgress = await Progress.findByIdAndUpdate(
-      req.params.id,
-      req.body,
+    // user and goal can't be changed through an update
+    const { user, goal, ...updates } = req.body;
+
+    const updatedProgress = await Progress.findOneAndUpdate(
+      { _id: req.params.id, user: req.user.userId },
+      updates,
       { new: true, runValidators: true }
     ).populate("goal", "title");
+
     if (!updatedProgress) {
       return res.status(404).json({ message: "Progress not found" });
     }
@@ -60,7 +89,10 @@ async function updateProgress(req, res, next) {
 
 async function deleteProgress(req, res, next) {
   try {
-    const deletedProgress = await Progress.findByIdAndDelete(req.params.id);
+    const deletedProgress = await Progress.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user.userId,
+    });
     if (!deletedProgress) {
       return res.status(404).json({ message: "Progress not found" });
     }

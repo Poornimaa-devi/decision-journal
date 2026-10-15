@@ -3,14 +3,16 @@ const Decision = require("../models/Decision");
 
 async function getNotifications(req, res, next) {
   try {
+    const userId = req.user.userId;
+
     const parsedDays = Number(req.query.days);
     const days = Number.isNaN(parsedDays) || parsedDays < 0 ? 7 : parsedDays;
     const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
     const [pendingDecisions, staleGoals, almostDoneGoals] = await Promise.all([
-      Decision.find({ status: "pending", createdAt: { $lt: cutoff } }),
-      Goal.find({ completed: false, updatedAt: { $lt: cutoff } }),
-      Goal.find({ completed: false, progress: { $gte: 80 } }),
+      Decision.find({ user: userId, status: "pending", createdAt: { $lt: cutoff } }),
+      Goal.find({ user: userId, completed: false, updatedAt: { $lt: cutoff } }),
+      Goal.find({ user: userId, completed: false, progress: { $gte: 80 } }),
     ]);
 
     const notifications = [

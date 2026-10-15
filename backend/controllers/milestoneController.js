@@ -1,8 +1,12 @@
 const Milestone = require("../models/Milestone");
+const Goal = require("../models/Goals");
 
 async function getAllMilestones(req, res, next) {
   try {
-    const milestones = await Milestone.find().populate("goal", "title");
+    const milestones = await Milestone.find({ user: req.user.userId }).populate(
+      "goal",
+      "title"
+    );
     res.json(milestones);
   } catch (err) {
     next(err);
@@ -11,9 +15,10 @@ async function getAllMilestones(req, res, next) {
 
 async function getMilestonesByGoal(req, res, next) {
   try {
-    const milestones = await Milestone.find({ goal: req.params.goalId }).sort({
-      createdAt: 1,
-    });
+    const milestones = await Milestone.find({
+      goal: req.params.goalId,
+      user: req.user.userId,
+    }).sort({ createdAt: 1 });
     res.json(milestones);
   } catch (err) {
     next(err);
@@ -22,7 +27,10 @@ async function getMilestonesByGoal(req, res, next) {
 
 async function getMilestoneById(req, res, next) {
   try {
-    const milestone = await Milestone.findById(req.params.id).populate("goal", "title");
+    const milestone = await Milestone.findOne({
+      _id: req.params.id,
+      user: req.user.userId,
+    }).populate("goal", "title");
     if (!milestone) {
       return res.status(404).json({ message: "Milestone not found" });
     }
@@ -34,7 +42,24 @@ async function getMilestoneById(req, res, next) {
 
 async function createMilestone(req, res, next) {
   try {
-    const newMilestone = await Milestone.create(req.body);
+    const { user, ...data } = req.body;
+
+    if (!data.goal) {
+      return res.status(400).json({ message: "goal is required" });
+    }
+
+    const ownsGoal = await Goal.findOne({
+      _id: data.goal,
+      user: req.user.userId,
+    });
+    if (!ownsGoal) {
+      return res.status(404).json({ message: "Goal not found" });
+    }
+
+    const newMilestone = await Milestone.create({
+      ...data,
+      user: req.user.userId,
+    });
     await newMilestone.populate("goal", "title");
     res.status(201).json(newMilestone);
   } catch (err) {
@@ -44,9 +69,12 @@ async function createMilestone(req, res, next) {
 
 async function updateMilestone(req, res, next) {
   try {
-    const updatedMilestone = await Milestone.findByIdAndUpdate(
-      req.params.id,
-      req.body,
+    // user and goal can't be changed through an update
+    const { user, goal, ...updates } = req.body;
+
+    const updatedMilestone = await Milestone.findOneAndUpdate(
+      { _id: req.params.id, user: req.user.userId },
+      updates,
       { new: true, runValidators: true }
     ).populate("goal", "title");
 
@@ -61,7 +89,10 @@ async function updateMilestone(req, res, next) {
 
 async function deleteMilestone(req, res, next) {
   try {
-    const deletedMilestone = await Milestone.findByIdAndDelete(req.params.id);
+    const deletedMilestone = await Milestone.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user.userId,
+    });
     if (!deletedMilestone) {
       return res.status(404).json({ message: "Milestone not found" });
     }

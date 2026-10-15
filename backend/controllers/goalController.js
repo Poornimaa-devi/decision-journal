@@ -1,20 +1,15 @@
+const mongoose = require("mongoose");
 const Goal = require("../models/Goals");
+const Decision = require("../models/Decision");
 
 async function getAllGoals(req, res, next) {
   try {
     const { search, priority, completed, sort } = req.query;
 
-    const filter = {};
-
-    if (search) {
-      filter.title = { $regex: search, $options: "i" };
-    }
-    if (priority) {
-      filter.priority = priority;
-    }
-    if (completed !== undefined) {
-      filter.completed = completed === "true";
-    }
+    const filter = { user: req.user.userId };
+    if (search) filter.title = { $regex: search, $options: "i" };
+    if (priority) filter.priority = priority;
+    if (completed !== undefined) filter.completed = completed === "true";
 
     const sortOptions = {
       progress: "progress",
@@ -32,7 +27,11 @@ async function getAllGoals(req, res, next) {
 
 async function getGoalById(req, res, next) {
   try {
-    const goal = await Goal.findById(req.params.id);
+    const goal = await Goal.findOne({
+      _id: req.params.id,
+      user: req.user.userId,
+    }).populate("decision", "title");
+
     if (!goal) {
       return res.status(404).json({ message: "Goal not found" });
     }
@@ -44,7 +43,19 @@ async function getGoalById(req, res, next) {
 
 async function createGoal(req, res, next) {
   try {
-    const newGoal = await Goal.create(req.body);
+    const { user, ...goalData } = req.body; // any client-sent "user" is discarded
+
+    if (goalData.decision) {
+      const ownsDecision = await Decision.findOne({
+        _id: goalData.decision,
+        user: req.user.userId,
+      });
+      if (!ownsDecision) {
+        return res.status(404).json({ message: "Decision not found" });
+      }
+    }
+
+    const newGoal = await Goal.create({ ...goalData, user: req.user.userId });
     await newGoal.populate("decision", "title");
     res.status(201).json(newGoal);
   } catch (err) {
@@ -54,10 +65,23 @@ async function createGoal(req, res, next) {
 
 async function updateGoal(req, res, next) {
   try {
-    const updatedGoal = await Goal.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    }).populate("decision", "title");
+    const { user, ...updates } = req.body;
+
+    if (updates.decision) {
+      const ownsDecision = await Decision.findOne({
+        _id: updates.decision,
+        user: req.user.userId,
+      });
+      if (!ownsDecision) {
+        return res.status(404).json({ message: "Decision not found" });
+      }
+    }
+
+    const updatedGoal = await Goal.findOneAndUpdate(
+      { _id: req.params.id, user: req.user.userId },
+      updates,
+      { new: true, runValidators: true }
+    ).populate("decision", "title");
 
     if (!updatedGoal) {
       return res.status(404).json({ message: "Goal not found" });
@@ -70,7 +94,10 @@ async function updateGoal(req, res, next) {
 
 async function deleteGoal(req, res, next) {
   try {
-    const deletedGoal = await Goal.findByIdAndDelete(req.params.id);
+    const deletedGoal = await Goal.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user.userId,
+    });
     if (!deletedGoal) {
       return res.status(404).json({ message: "Goal not found" });
     }
@@ -82,7 +109,10 @@ async function deleteGoal(req, res, next) {
 
 async function getGoalAnalytics(req, res, next) {
   try {
+    const userId = new mongoose.Types.ObjectId(req.user.userId);
+
     const byPriority = await Goal.aggregate([
+      { $match: { user: userId } },
       {
         $group: {
           _id: "$priority",
@@ -93,6 +123,7 @@ async function getGoalAnalytics(req, res, next) {
     ]);
 
     const overall = await Goal.aggregate([
+      { $match: { user: userId } },
       {
         $group: {
           _id: null,

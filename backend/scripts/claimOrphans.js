@@ -1,6 +1,6 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
-const Goal = require("../models/Goal");
+const Goal = require("../models/Goals");
 const Decision = require("../models/Decision");
 const Progress = require("../models/Progress");
 const Milestone = require("../models/Milestone");
