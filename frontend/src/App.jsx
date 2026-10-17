@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import Header from "../components/Header";
-import GoalForm from "../components/GoalForm";
-import Dashboard from "../components/Dashboard";
-import Analytics from "../components/Analytics";
-import Profile from "../components/Profile";
+import Header from "./components/layout/Header";
+import GoalForm from "./components/goals/GoalForm";
+import Dashboard from "./components/goals/Dashboard";
+import Analytics from "./components/insights/Analytics";
+import Notifications from "./components/insights/Notifications"; 
+import Profile from "./components/profile/Profile";
 import { TEMP_TOKEN } from "./config";
 
 const API_URL = "http://localhost:3000";

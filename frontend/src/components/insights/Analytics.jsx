@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { TEMP_TOKEN } from "../src/config";
+import { TEMP_TOKEN } from "../../config";
 
 function Analytics() {
   const [data, setData] = useState(null);
