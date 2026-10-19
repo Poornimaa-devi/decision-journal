@@ -1,38 +1,31 @@
 import { useState, useEffect } from "react";
-
-const TEMP_TOKEN = "paste_your_real_token_here";
+import { getMe, updateMe } from "../../api/users";
 
 function Profile() {
   const [user, setUser] = useState(null);
   const [name, setName] = useState("");
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    async function fetchProfile() {
-      const response = await fetch("http://localhost:3000/api/users/me", {
-        headers: { Authorization: `Bearer ${TEMP_TOKEN}` },
-      });
-      const data = await response.json();
-      setUser(data);
-      setName(data.name || "");
-    }
-    fetchProfile();
+    getMe()
+      .then((data) => {
+        setUser(data);
+        setName(data.name || "");
+      })
+      .catch((err) => setError(err.message));
   }, []);
 
   async function handleSave(e) {
     e.preventDefault();
-    const response = await fetch("http://localhost:3000/api/users/me", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${TEMP_TOKEN}`,
-      },
-      body: JSON.stringify({ name }),
-    });
-    if (response.ok) {
-      setUser(await response.json());
+    try {
+      setUser(await updateMe({ name }));
+      setError(null);
+    } catch (err) {
+      setError(err.message);
     }
   }
 
+  if (error && !user) return <p>Could not load profile: {error}</p>;
   if (!user) return <p>Loading profile...</p>;
 
   return (
@@ -49,6 +42,7 @@ function Profile() {
         />
         <button type="submit">Save</button>
       </form>
+      {error && <p>{error}</p>}
     </div>
   );
 }

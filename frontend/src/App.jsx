@@ -1,27 +1,33 @@
 import { Routes, Route } from "react-router-dom";
-import Header from "./components/layout/Header";
-import Navbar from "./components/layout/Navbar";
-import GoalsPage from "./pages/GoalsPage";
-import DecisionsPage from "../pages/DecisionsPage";
-import DecisionDetailPage from "./pages/DecisionDetailPage";
-import InsightsPage from "../pages/InsightsPage";
-import ProfilePage from "../pages/ProfilePage";
+import ProtectedRoute from "./components/layout/ProtectedRoute";
+import Layout from "./components/layout/Layout";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import GoalsPage from "./pages/Goalspages";
+import DecisionsPage from "./pages/Decisionspage";
+import DecisionDetailPage from "./pages/Decisiondetailspage";
+import InsightsPage from "./pages/Insightspage";
+import ProfilePage from "./pages/Profilepage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   return (
-    <div>
-      <Header />
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<GoalsPage />} />
-        <Route path="/decisions" element={<DecisionsPage />} />
-        <Route path="/decisions/:id" element={<DecisionDetailPage />} />
-        <Route path="/insights" element={<InsightsPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </div>
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
+
+      <Route element={<ProtectedRoute />}>
+        <Route element={<Layout />}>
+          <Route path="/" element={<GoalsPage />} />
+          <Route path="/decisions" element={<DecisionsPage />} />
+          <Route path="/decisions/:id" element={<DecisionDetailPage />} />
+          <Route path="/insights" element={<InsightsPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+        </Route>
+      </Route>
+
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   );
 }
 

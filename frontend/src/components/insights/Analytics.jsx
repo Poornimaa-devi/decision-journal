@@ -1,38 +1,23 @@
 import { useState, useEffect } from "react";
-import { TEMP_TOKEN } from "../../config";
+import { getGoalAnalytics } from "../../api/goals";
+import { getDecisionAnalytics } from "../../api/decisions";
 
 function Analytics() {
   const [data, setData] = useState(null);
   const [decisionData, setDecisionData] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    async function fetchAnalytics() {
-      const response = await fetch("http://localhost:3000/api/goals/analytics", {
-        headers: { Authorization: `Bearer ${TEMP_TOKEN}` },
-      });
-      const result = await response.json();
-      setData(result);
-    }
-    fetchAnalytics();
+    getGoalAnalytics().then(setData).catch((err) => setError(err.message));
+    getDecisionAnalytics().then(setDecisionData).catch((err) => setError(err.message));
   }, []);
 
-  useEffect(() => {
-    async function fetchDecisionAnalytics() {
-      const response = await fetch("http://localhost:3000/api/decisions/analytics", {
-        headers: { Authorization: `Bearer ${TEMP_TOKEN}` },
-      });
-      const result = await response.json();
-      setDecisionData(result);
-    }
-    fetchDecisionAnalytics();
-  }, []);
-
+  if (error) return <p>Could not load analytics: {error}</p>;
   if (!data) return <p>Loading analytics...</p>;
 
   return (
     <div className="analytics">
       <h2>Analytics</h2>
-
       <p>
         {data.overall.completedGoals} of {data.overall.totalGoals} goals completed
       </p>

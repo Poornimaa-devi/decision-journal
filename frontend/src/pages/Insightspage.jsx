@@ -1,5 +1,5 @@
 import Analytics from "../components/insights/Analytics";
-import Notifications from "./components/insights/Notifications";
+import Notifications from "../components/insights/Notifications";
 
 function InsightsPage() {
   return (
