@@ -30,14 +30,11 @@ function GoalsPage() {
   const { data: decisions } = useFetch(getDecisions, []);
 
   async function handleAddGoal(newGoal) {
-    setActionError(null);
-    try {
-      const saved = await createGoal(newGoal);
-      setGoals((prev) => [...(prev ?? []), saved]);
-    } catch (err) {
-      setActionError(err.message);
-    }
-  }
+  setActionError(null);
+  const saved = await createGoal(newGoal);   // a failure throws to GoalForm's useForm
+  setGoals((prev) => [...(prev ?? []), saved]);
+}
+
 
   async function handleToggleComplete(goalId) {
     setActionError(null);

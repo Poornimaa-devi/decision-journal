@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
+import { validateSignup } from "../utils/validators";
 
 function SignupPage() {
   const { signup, isAuthenticated } = useAuth();
