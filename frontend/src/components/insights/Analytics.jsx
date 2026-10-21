@@ -1,39 +1,51 @@
-import { useState, useEffect } from "react";
+import Loading from "../common/Loading";
+import ErrorMessage from "../common/ErrorMessage";
+import { useFetch } from "../../hook/useFetch";
 import { getGoalAnalytics } from "../../api/goals";
 import { getDecisionAnalytics } from "../../api/decisions";
 
 function Analytics() {
-  const [data, setData] = useState(null);
-  const [decisionData, setDecisionData] = useState(null);
-  const [error, setError] = useState(null);
+  const goals = useFetch(getGoalAnalytics, []);
+  const decisions = useFetch(getDecisionAnalytics, []);
 
-  useEffect(() => {
-    getGoalAnalytics().then(setData).catch((err) => setError(err.message));
-    getDecisionAnalytics().then(setDecisionData).catch((err) => setError(err.message));
-  }, []);
+  if (goals.isLoading && !goals.data) {
+    return <Loading label="Loading analytics..." />;
+  }
 
-  if (error) return <p>Could not load analytics: {error}</p>;
-  if (!data) return <p>Loading analytics...</p>;
+  if (goals.error && !goals.data) {
+    return <ErrorMessage error={goals.error} onRetry={goals.reload} />;
+  }
+
+  const { overall, byPriority } = goals.data;
 
   return (
     <div className="analytics">
       <h2>Analytics</h2>
+
       <p>
-        {data.overall.completedGoals} of {data.overall.totalGoals} goals completed
+        {overall.completedGoals} of {overall.totalGoals} goals completed
       </p>
 
       <h3>Goals by Priority</h3>
-      {data.byPriority.map((item) => (
-        <p key={item._id}>
-          {item._id}: {item.count} goals, avg progress {Math.round(item.avgProgress)}%
-        </p>
-      ))}
+      {byPriority.length === 0 ? (
+        <p>No goals yet.</p>
+      ) : (
+        byPriority.map((item) => (
+          <p key={item._id}>
+            {item._id}: {item.count} goals, avg progress {Math.round(item.avgProgress)}%
+          </p>
+        ))
+      )}
 
-      {decisionData && (
+      <h3>Decisions by Status</h3>
+      {decisions.isLoading && !decisions.data ? (
+        <Loading label="Loading decision stats..." />
+      ) : decisions.error && !decisions.data ? (
+        <ErrorMessage error={decisions.error} onRetry={decisions.reload} />
+      ) : (
         <div>
-          <h3>Decisions by Status</h3>
-          <p>Total: {decisionData.overall.totalDecisions}</p>
-          {decisionData.byStatus.map((item) => (
+          <p>Total: {decisions.data.overall.totalDecisions}</p>
+          {decisions.data.byStatus.map((item) => (
             <p key={item._id}>
               {item._id}: {item.count}
             </p>

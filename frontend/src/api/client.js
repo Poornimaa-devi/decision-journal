@@ -14,10 +14,19 @@ export async function apiFetch(path, options = {}) {
     if (token) headers.Authorization = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...fetchOptions,
-    headers,
-  });
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...fetchOptions,
+      headers,
+    });
+  } catch {
+    const networkError = new Error(
+      "Cannot reach the server. Check that the backend is running."
+    );
+    networkError.status = 0;
+    throw networkError;
+  }
 
   if (!response.ok) {
     if (response.status === 401 && auth) {

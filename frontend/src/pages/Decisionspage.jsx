@@ -1,26 +1,22 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import DecisionForm from "../components/decisions/DecisionForm";
+import Loading from "../components/common/Loading";
+import ErrorMessage from "../components/common/ErrorMessage";
+import { useFetch } from "../hook/useFetch";
 import { getDecisions, createDecision } from "../api/decisions";
 
 function DecisionsPage() {
-  const [decisions, setDecisions] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    getDecisions()
-      .then(setDecisions)
-      .catch((err) => setError(err.message))
-      .finally(() => setIsLoading(false));
-  }, []);
+  const { data: decisions, setData, error, isLoading, reload } = useFetch(getDecisions, []);
+  const [actionError, setActionError] = useState(null);
 
   async function handleAddDecision(newDecision) {
+    setActionError(null);
     try {
       const saved = await createDecision(newDecision);
-      setDecisions([...decisions, saved]);
+      setData((prev) => [...(prev ?? []), saved]);
     } catch (err) {
-      setError(err.message);
+      setActionError(err.message);
     }
   }
 
@@ -28,11 +24,12 @@ function DecisionsPage() {
     <div>
       <h2>Decisions</h2>
       <DecisionForm onAddDecision={handleAddDecision} />
+      {actionError && <ErrorMessage error={actionError} />}
 
-      {isLoading ? (
-        <p>Loading decisions...</p>
-      ) : error ? (
-        <p>Something went wrong: {error}</p>
+      {isLoading && !decisions ? (
+        <Loading label="Loading decisions..." />
+      ) : error && !decisions ? (
+        <ErrorMessage error={error} onRetry={reload} />
       ) : decisions.length === 0 ? (
         <p>No decisions recorded yet.</p>
       ) : (

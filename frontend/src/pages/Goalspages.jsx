@@ -1,75 +1,69 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import GoalForm from "../components/goals/GoalForm";
 import Dashboard from "../components/goals/Dashboard";
+import Loading from "../components/common/Loading";
+import ErrorMessage from "../components/common/ErrorMessage";
+import { useFetch } from "../hook/useFetch";
 import { getGoals, createGoal, updateGoal, deleteGoal } from "../api/goals";
 import { getDecisions } from "../api/decisions";
 
 function GoalsPage() {
-  const [goals, setGoals] = useState([]);
-  const [decisions, setDecisions] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("");
   const [sortBy, setSortBy] = useState("newest");
+  const [actionError, setActionError] = useState(null);
 
-  useEffect(() => {
-    async function loadGoals() {
-      try {
-        const params = {};
-        if (searchTerm) params.search = searchTerm;
-        if (priorityFilter) params.priority = priorityFilter;
-        if (sortBy) params.sort = sortBy;
-
-        setGoals(await getGoals(params));
-        setError(null);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    loadGoals();
+  const {
+    data: goals,
+    setData: setGoals,
+    error: loadError,
+    isLoading,
+    reload,
+  } = useFetch(() => {
+    const params = {};
+    if (searchTerm) params.search = searchTerm;
+    if (priorityFilter) params.priority = priorityFilter;
+    if (sortBy) params.sort = sortBy;
+    return getGoals(params);
   }, [searchTerm, priorityFilter, sortBy]);
 
-  useEffect(() => {
-    getDecisions()
-      .then(setDecisions)
-      .catch((err) => console.error("Could not load decisions:", err.message));
-  }, []);
+  const { data: decisions } = useFetch(getDecisions, []);
 
   async function handleAddGoal(newGoal) {
+    setActionError(null);
     try {
       const saved = await createGoal(newGoal);
-      setGoals([...goals, saved]);
+      setGoals((prev) => [...(prev ?? []), saved]);
     } catch (err) {
-      setError(err.message);
+      setActionError(err.message);
     }
   }
 
   async function handleToggleComplete(goalId) {
+    setActionError(null);
     const goal = goals.find((g) => g._id === goalId);
     try {
       const updated = await updateGoal(goalId, { completed: !goal.completed });
-      setGoals(goals.map((g) => (g._id === goalId ? updated : g)));
+      setGoals((prev) => prev.map((g) => (g._id === goalId ? updated : g)));
     } catch (err) {
-      setError(err.message);
+      setActionError(err.message);
     }
   }
 
   async function handleDeleteGoal(goalId) {
+    setActionError(null);
     try {
       await deleteGoal(goalId);
-      setGoals(goals.filter((g) => g._id !== goalId));
+      setGoals((prev) => prev.filter((g) => g._id !== goalId));
     } catch (err) {
-      setError(err.message);
+      setActionError(err.message);
     }
   }
 
   return (
     <div>
       <h2>Goals</h2>
-      <GoalForm onAddGoal={handleAddGoal} decisions={decisions} />
+      <GoalForm onAddGoal={handleAddGoal} decisions={decisions ?? []} />
 
       <input
         type="text"
@@ -91,13 +85,15 @@ function GoalsPage() {
         <option value="progress">By progress</option>
       </select>
 
-      {isLoading ? (
-        <p>Loading goals...</p>
-      ) : error ? (
-        <p>Something went wrong: {error}</p>
+      {actionError && <ErrorMessage error={actionError} />}
+
+      {isLoading && !goals ? (
+        <Loading label="Loading goals..." />
+      ) : loadError && !goals ? (
+        <ErrorMessage error={loadError} onRetry={reload} />
       ) : (
         <Dashboard
-          goals={goals}
+          goals={goals ?? []}
           onToggleComplete={handleToggleComplete}
           onDeleteGoal={handleDeleteGoal}
         />

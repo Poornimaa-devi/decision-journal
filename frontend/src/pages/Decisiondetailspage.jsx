@@ -1,28 +1,26 @@
-import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import Loading from "../components/common/Loading";
+import ErrorMessage from "../components/common/ErrorMessage";
+import { useFetch } from "../hook/useFetch";
 import { getDecisionById } from "../api/decisions";
 
 function DecisionDetailPage() {
   const { id } = useParams();
-  const [decision, setDecision] = useState(null);
-  const [error, setError] = useState(null);
+  const { data: decision, error, isLoading, reload } = useFetch(
+    () => getDecisionById(id),
+    [id]
+  );
 
-  useEffect(() => {
-    getDecisionById(id)
-      .then(setDecision)
-      .catch((err) => setError(err.message));
-  }, [id]);
+  if (isLoading && !decision) return <Loading label="Loading decision..." />;
 
-  if (error) {
+  if (error && !decision) {
     return (
       <div>
-        <p>Could not load this decision: {error}</p>
+        <ErrorMessage error={error} onRetry={reload} />
         <Link to="/decisions">← Back to decisions</Link>
       </div>
     );
   }
-
-  if (!decision) return <p>Loading decision...</p>;
 
   return (
     <div>

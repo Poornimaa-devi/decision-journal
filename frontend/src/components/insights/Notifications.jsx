@@ -1,28 +1,15 @@
-import { useState, useEffect } from "react";
-import { getNotifications } from "../../api/notifications";   // in insights/, use "../../api/notifications"
+import Loading from "../common/Loading";
+import ErrorMessage from "../common/ErrorMessage";
+import { useFetch } from "../../hook/useFetch";
+import { getNotifications } from "../../api/notifications";
 
 function Notifications({ days }) {
-  const [notifications, setNotifications] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { data, error, isLoading, reload } = useFetch(() => getNotifications(days), [days]);
 
-  useEffect(() => {
-    async function loadNotifications() {
-      try {
-        const data = await getNotifications(days);
-        setNotifications(data.notifications);
-        setError(null);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    loadNotifications();
-  }, [days]);
+  if (isLoading && !data) return <Loading label="Loading notifications..." />;
+  if (error && !data) return <ErrorMessage error={error} onRetry={reload} />;
 
-  if (isLoading) return <p>Loading notifications...</p>;
-  if (error) return <p>Could not load notifications: {error}</p>;
+  const notifications = data.notifications;
 
   return (
     <div className="notifications">
