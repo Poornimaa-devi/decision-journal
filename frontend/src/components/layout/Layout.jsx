@@ -1,18 +1,20 @@
 import { Outlet, useLocation } from "react-router-dom";
 import Header from "./Header";
 import Navbar from "./Navbar";
-import ErrorBoundary from "../common/Errorboundary";
+import ErrorBoundary from "../common/ErrorBoundary";
 
 function Layout() {
   const location = useLocation();
 
   return (
-    <div>
+    <div className="container">
       <Header />
       <Navbar />
-      <ErrorBoundary key={location.pathname}>
-        <Outlet />
-      </ErrorBoundary>
+      <main>
+        <ErrorBoundary key={location.pathname}>
+          <Outlet />
+        </ErrorBoundary>
+      </main>
     </div>
   );
 }

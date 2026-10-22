@@ -61,7 +61,7 @@ function GoalsPage() {
     <div>
       <h2>Goals</h2>
       <GoalForm onAddGoal={handleAddGoal} decisions={decisions ?? []} />
-
+      <div className="toolbar">
       <input
         type="text"
         placeholder="Search goals..."
@@ -81,6 +81,7 @@ function GoalsPage() {
         <option value="oldest">Oldest first</option>
         <option value="progress">By progress</option>
       </select>
+      </div>
 
       {actionError && <ErrorMessage error={actionError} />}
 

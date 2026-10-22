@@ -36,7 +36,7 @@ function SignupPage() {
   }
 
   return (
-    <div>
+    <div className="auth-page">
       <h1>Decision Journal</h1>
       <h2>Create an account</h2>
       <form onSubmit={handleSubmit}>

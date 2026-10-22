@@ -23,7 +23,7 @@ function LoginPage() {
   }
 
   return (
-    <div>
+    <div className="auth-page">
       <h1>Decision Journal</h1>
       <h2>Log in</h2>
       <form onSubmit={form.handleSubmit} noValidate>
