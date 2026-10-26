@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import Loading from "../components/common/Loading";
 import ErrorMessage from "../components/common/ErrorMessage";
 import { useFetch } from "../hook/useFetch";
+import { usePageTitle } from "../hook/usePageTitle";
 import { getDecisionById } from "../api/decisions";
 
 function DecisionDetailPage() {
@@ -10,6 +11,8 @@ function DecisionDetailPage() {
     () => getDecisionById(id),
     [id]
   );
+
+  usePageTitle(decision?.title ?? "Decision");
 
   if (isLoading && !decision) return <Loading label="Loading decision..." />;
 
@@ -26,7 +29,12 @@ function DecisionDetailPage() {
     <div>
       <Link to="/decisions">← Back to decisions</Link>
       <h2>{decision.title}</h2>
-      <p><strong>Status:</strong> {decision.status}</p>
+      <p>
+  <strong>Status:</strong>{" "}
+  <span className="badge" data-tone={decision.status}>
+    {decision.status}
+  </span>
+</p>
       <p><strong>Reasoning:</strong></p>
       <p>{decision.reasoning}</p>
     </div>

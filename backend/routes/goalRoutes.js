@@ -8,7 +8,7 @@ const {
   getGoalAnalytics,
 } = require("../controllers/goalController");
 const validateGoal = require("../middleware/validateGoal");
-const authMiddleware = require("../middleware/authMiddleware");
+const authMiddleware = require("../middleware/AuthMiddleware");
 
 const router = express.Router();
 

@@ -1,23 +1,46 @@
 import GoalCard from "./GoalCard";
 
-function Dashboard({ goals, onToggleComplete, onDeleteGoal }) {
-  const totalGoals = goals.length;
-  const completedGoals = goals.filter((g) => g.completed).length;
-  const completionRate =
-    totalGoals === 0 ? 0 : Math.round((completedGoals / totalGoals) * 100);
+function Dashboard({
+  goals,
+  onToggleComplete,
+  onDeleteGoal,
+  hasFilters = false,
+  onClearFilters,
+}) {
+  const total = goals.length;
+  const completed = goals.filter((g) => g.completed).length;
+  const rate = total === 0 ? 0 : Math.round((completed / total) * 100);
 
-  if (totalGoals === 0) {
-    return <p>No goals yet. Add your first one above!</p>;
+  if (total === 0) {
+    if (hasFilters) {
+      return (
+        <div className="empty-state">
+          <p>No goals match your search or filters.</p>
+          {onClearFilters && <button onClick={onClearFilters}>Clear filters</button>}
+        </div>
+      );
+    }
+    return (
+      <div className="empty-state">
+        <h3>No goals yet</h3>
+        <p>
+          Add your first goal using the form above. You can link it to a decision to
+          remember why you set it.
+        </p>
+      </div>
+    );
   }
 
   return (
     <div className="dashboard">
-      <div className="dashboard-summary">
-        <h2>Your Progress</h2>
+      <section className="dashboard-summary" aria-label="Goal summary">
+        <h2>Your progress</h2>
         <p>
-          {completedGoals} of {totalGoals} goals completed ({completionRate}%)
+          {completed} of {total} goals completed ({rate}%)
+          {hasFilters && " (filtered view)"}
         </p>
-      </div>
+        <progress value={rate} max="100" aria-label="Overall completion" />
+      </section>
 
       <div className="goal-list">
         {goals.map((goal) => (
@@ -28,6 +51,7 @@ function Dashboard({ goals, onToggleComplete, onDeleteGoal }) {
             priority={goal.priority}
             progress={goal.progress}
             completed={goal.completed}
+            decision={goal.decision}
             onToggleComplete={onToggleComplete}
             onDeleteGoal={onDeleteGoal}
           />

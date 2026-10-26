@@ -1,2 +1,2 @@
-export const API_BASE_URL = "http://localhost:3000";
-export const TEMP_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkM2M3YWRkOGNmM2Q0ZTEwN2QyMjEiLCJlbWFpbCI6InBvb3JuaW1hYUBnbWFpbC5jb20iLCJpYXQiOjE3OTIyMjQ4NzQsImV4cCI6MTc5MjMxMTI3NH0.RGY-ZGonb2oiHo-HHwswTjbBOxbbmwVaMrfl8Ns76gI";
+// Backend URL. Override per environment with a VITE_API_URL variable (used on deploy).
+export const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";

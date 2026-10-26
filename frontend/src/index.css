@@ -319,3 +319,124 @@ button[type="submit"]:hover:not(:disabled) {
     animation: none !important;
   }
 }
+
+/* ---------- Day 84: polish ---------- */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  padding: 0.75rem 1rem;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: 0 0 var(--radius) 0;
+  z-index: 10;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+main:focus {
+  outline: none;
+}
+
+/* Badges: text carries the meaning, color reinforces it */
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: var(--color-hover);
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+.badge[data-tone="high"] { background: #fee2e2; color: #991b1b; }
+.badge[data-tone="medium"],
+.badge[data-tone="pending"] { background: #fef3c7; color: #92400e; }
+.badge[data-tone="low"],
+.badge[data-tone="done"],
+.badge[data-tone="decided"] { background: #dcfce7; color: #166534; }
+.badge[data-tone="in-progress"],
+.badge[data-tone="reviewing"] { background: #dbeafe; color: #1e40af; }
+
+/* Goal card */
+.goal-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
+
+.goal-card-header h3 {
+  margin: 0;
+}
+
+.goal-card[data-completed="true"] .goal-title {
+  color: var(--color-muted);
+  text-decoration: line-through;
+}
+
+.goal-decision {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.goal-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.goal-progress progress {
+  flex: 1;
+  min-width: 0;
+}
+
+progress {
+  width: 100%;
+  height: 0.6rem;
+  accent-color: var(--color-primary);
+}
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: auto;
+}
+
+/* Destructive actions */
+.btn-danger {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: var(--color-danger-bg);
+}
+
+.btn-danger-solid {
+  border-color: var(--color-danger);
+  background: var(--color-danger);
+  color: #fff;
+}
+
+.btn-danger-solid:hover:not(:disabled) {
+  background: #991b1b;
+}
+
+/* Empty states */
+.empty-state {
+  padding: var(--space-4) var(--space-2);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius);
+  text-align: center;
+  color: var(--color-muted);
+}
+
+.empty-state h3 {
+  color: var(--color-text);
+}

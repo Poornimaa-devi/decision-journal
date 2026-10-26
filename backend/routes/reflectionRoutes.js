@@ -4,8 +4,8 @@ const {
   createReflection,
   updateReflection,
   deleteReflection,
-} = require("../controllers/reflectionController");
-const authMiddleware = require("../middleware/authMiddleware");
+} = require("../controllers/reflectionControllers");
+const authMiddleware = require("../middleware/AuthMiddleware");
 
 const router = express.Router();
 

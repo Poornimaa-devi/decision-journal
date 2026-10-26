@@ -7,7 +7,7 @@ const {
   updateProgress,
   deleteProgress,
 } = require("../controllers/progressController");
-const authMiddleware = require("../middleware/authMiddleware");
+const authMiddleware = require("../middleware/AuthMiddleware");
 
 const router = express.Router();
 

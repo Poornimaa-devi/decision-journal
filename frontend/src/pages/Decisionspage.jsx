@@ -1,71 +1,50 @@
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import { useAuth } from "../auth/useAuth";
-import FormField from "../components/common/FormField";
+import { Link } from "react-router-dom";
+import DecisionForm from "../components/decisions/DecisionForm";
+import Loading from "../components/common/Loading";
 import ErrorMessage from "../components/common/ErrorMessage";
-import { useForm } from "../hook/useForm";
-import { validateSignup } from "../utils/validators";
+import { useFetch } from "../hook/useFetch";
+import { usePageTitle } from "../hook/usePageTitle";
+import { getDecisions, createDecision } from "../api/decisions";
 
-function SignupPage() {
-  const { signup, isAuthenticated } = useAuth();
-  const navigate = useNavigate();
+function DecisionsPage() {
+  usePageTitle("Decisions");
 
-  const form = useForm({
-    initialValues: { email: "", password: "" },
-    validate: validateSignup,
-    onSubmit: async (values) => {
-      await signup(values.email.trim(), values.password);
-      navigate("/", { replace: true });
-    },
-  });
+  const { data: decisions, setData, error, isLoading, reload } = useFetch(getDecisions, []);
 
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
+  // A failure here throws up to DecisionForm, which shows it next to the form.
+  async function handleAddDecision(newDecision) {
+    const saved = await createDecision(newDecision);
+    setData((prev) => [...(prev ?? []), saved]);
   }
 
   return (
     <div>
-      <h1>Decision Journal</h1>
-      <h2>Create an account</h2>
+      <h2>Decisions</h2>
+      <DecisionForm onAddDecision={handleAddDecision} />
 
-      <form onSubmit={form.handleSubmit} noValidate>
-        <FormField
-          id="signup-email"
-          label="Email"
-          type="email"
-          name="email"
-          autoComplete="email"
-          value={form.values.email}
-          onChange={form.handleChange}
-          onBlur={form.handleBlur}
-          error={form.errors.email}
-        />
-
-        <FormField
-          id="signup-password"
-          label="Password (min 6 characters)"
-          type="password"
-          name="password"
-          autoComplete="new-password"
-          value={form.values.password}
-          onChange={form.handleChange}
-          onBlur={form.handleBlur}
-          error={form.errors.password}
-        />
-
-        {form.submitError && !form.errors.email && !form.errors.password && (
-          <ErrorMessage error={form.submitError} />
-        )}
-
-        <button type="submit" disabled={form.isSubmitting}>
-          {form.isSubmitting ? "Creating account..." : "Sign up"}
-        </button>
-      </form>
-
-      <p>
-        Already have an account? <Link to="/login">Log in</Link>
-      </p>
+      {isLoading && !decisions ? (
+        <Loading label="Loading decisions..." />
+      ) : error && !decisions ? (
+        <ErrorMessage error={error} onRetry={reload} />
+      ) : (decisions ?? []).length === 0 ? (
+        <div className="empty-state">
+          <h3>No decisions recorded yet</h3>
+          <p>Write down a decision and why you made it. You can link goals to it later.</p>
+        </div>
+      ) : (
+        <ul className="decision-list">
+          {decisions.map((d) => (
+            <li key={d._id}>
+              <Link to={`/decisions/${d._id}`}>{d.title}</Link>
+              <span className="badge" data-tone={d.status}>
+                {d.status}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
 
-export default SignupPage;
+export default DecisionsPage;

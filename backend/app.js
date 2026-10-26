@@ -9,6 +9,7 @@ const decisionRoutes = require("./routes/decisionRoutes");
 const milestoneRoutes = require("./routes/milestoneRoutes");
 const userRoutes = require("./routes/userRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
+const reflectionRoutes = require("./routes/reflectionRoutes");
 
 const app = express();
 app.use(cors());
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use(logger);
 app.use(decisionRoutes);
 app.use(milestoneRoutes);
+app.use(reflectionRoutes);
 app.use(userRoutes);
 
 app.get("/", (req, res) => {

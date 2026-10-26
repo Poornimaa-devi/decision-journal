@@ -1,64 +1,69 @@
-import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
+import FormField from "../components/common/FormField";
+import ErrorMessage from "../components/common/ErrorMessage";
+import { useForm } from "../hook/useForm";
+import { usePageTitle } from "../hook/usePageTitle";
 import { validateSignup } from "../utils/validators";
 
 function SignupPage() {
+  usePageTitle("Sign up");
+
   const { signup, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const form = useForm({
+    initialValues: { email: "", password: "" },
+    validate: validateSignup,
+    onSubmit: async (values) => {
+      await signup(values.email.trim(), values.password);
+      navigate("/", { replace: true });
+    },
+  });
 
   if (isAuthenticated) {
     return <Navigate to="/" replace />;
-  }
-
-  async function handleSubmit(e) {
-    e.preventDefault();
-
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
-      return;
-    }
-
-    setError(null);
-    setIsSubmitting(true);
-    try {
-      await signup(email, password);
-      navigate("/", { replace: true });
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setIsSubmitting(false);
-    }
   }
 
   return (
     <div className="auth-page">
       <h1>Decision Journal</h1>
       <h2>Create an account</h2>
-      <form onSubmit={handleSubmit}>
-        <input
+
+      <form onSubmit={form.handleSubmit} noValidate>
+        <FormField
+          id="signup-email"
+          label="Email"
           type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
+          name="email"
+          autoComplete="email"
+          value={form.values.email}
+          onChange={form.handleChange}
+          onBlur={form.handleBlur}
+          error={form.errors.email}
         />
-        <input
+
+        <FormField
+          id="signup-password"
+          label="Password (min 6 characters)"
           type="password"
-          placeholder="Password (min 6 characters)"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
+          name="password"
+          autoComplete="new-password"
+          value={form.values.password}
+          onChange={form.handleChange}
+          onBlur={form.handleBlur}
+          error={form.errors.password}
         />
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Creating account..." : "Sign up"}
+
+        {form.submitError && !form.errors.email && !form.errors.password && (
+          <ErrorMessage error={form.submitError} />
+        )}
+
+        <button type="submit" disabled={form.isSubmitting}>
+          {form.isSubmitting ? "Creating account..." : "Sign up"}
         </button>
       </form>
-      {error && <p>{error}</p>}
+
       <p>
         Already have an account? <Link to="/login">Log in</Link>
       </p>

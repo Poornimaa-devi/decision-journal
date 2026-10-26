@@ -4,8 +4,11 @@ import FormField from "../components/common/FormField";
 import ErrorMessage from "../components/common/ErrorMessage";
 import { useForm } from "../hook/useForm";
 import { validateLogin } from "../utils/validators";
+import { usePageTitle } from "../hook/usePageTitle";
 
 function LoginPage() {
+  usePageTitle("Log in");
+
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 

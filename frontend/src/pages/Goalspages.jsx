@@ -4,10 +4,13 @@ import Dashboard from "../components/goals/Dashboard";
 import Loading from "../components/common/Loading";
 import ErrorMessage from "../components/common/ErrorMessage";
 import { useFetch } from "../hook/useFetch";
+import { usePageTitle } from "../hook/usePageTitle";
 import { getGoals, createGoal, updateGoal, deleteGoal } from "../api/goals";
 import { getDecisions } from "../api/decisions";
 
 function GoalsPage() {
+  usePageTitle("Goals");
+
   const [searchTerm, setSearchTerm] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("");
   const [sortBy, setSortBy] = useState("newest");
@@ -28,6 +31,13 @@ function GoalsPage() {
   }, [searchTerm, priorityFilter, sortBy]);
 
   const { data: decisions } = useFetch(getDecisions, []);
+
+  const hasFilters = Boolean(searchTerm || priorityFilter);
+
+  function clearFilters() {
+    setSearchTerm("");
+    setPriorityFilter("");
+  }
 
   async function handleAddGoal(newGoal) {
   setActionError(null);
@@ -65,18 +75,19 @@ function GoalsPage() {
       <input
         type="text"
         placeholder="Search goals..."
+        aria-label="Search goals"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
 
-      <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
+      <select aria-label="Filter by priority" value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
         <option value="">All priorities</option>
         <option value="low">Low</option>
         <option value="medium">Medium</option>
         <option value="high">High</option>
       </select>
 
-      <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+      <select aria-label="Sort goals" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
         <option value="newest">Newest first</option>
         <option value="oldest">Oldest first</option>
         <option value="progress">By progress</option>
@@ -94,6 +105,8 @@ function GoalsPage() {
           goals={goals ?? []}
           onToggleComplete={handleToggleComplete}
           onDeleteGoal={handleDeleteGoal}
+          hasFilters={hasFilters}
+          onClearFilters={clearFilters}
         />
       )}
     </div>

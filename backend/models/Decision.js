@@ -17,6 +17,12 @@ const decisionSchema = new mongoose.Schema(
       enum: ["pending", "decided", "reviewing"],
       default: "pending",
     },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "Owner is required"],
+      index: true,
+    },
   },
   { timestamps: true }
 );
