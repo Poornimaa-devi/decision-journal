@@ -1,6 +1,7 @@
 const Reflection = require("../models/Reflection");
 const Goal = require("../models/Goals");
 const Decision = require("../models/Decision");
+const { pick, isIdString } = require("../utils/safeInput");
 
 async function getAllReflections(req, res, next) {
   try {
@@ -16,6 +17,11 @@ async function getAllReflections(req, res, next) {
 async function createReflection(req, res, next) {
   try {
     const { targetType, goal, decision, content } = req.body;
+        // Ids must be plain id strings (an object such as { "$ne": null } is a query operator).
+    const badId = (value) => value !== undefined && value !== null && !isIdString(value);
+    if (badId(goal) || badId(decision)) {
+      return res.status(400).json({ message: "Invalid goal or decision id" });
+    }
 
     if (targetType === "Goal") {
       if (!goal) {
@@ -65,7 +71,7 @@ async function createReflection(req, res, next) {
 async function updateReflection(req, res, next) {
   try {
     // Only the content of a reflection can be edited. Owner and target are fixed.
-    const { user, targetType, goal, decision, ...updates } = req.body;
+    const updates = pick(req.body, ["content"]);
 
     const updatedReflection = await Reflection.findOneAndUpdate(
       { _id: req.params.id, user: req.user.userId },

@@ -5,7 +5,7 @@ async function signup(req, res, next) {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
+    if (typeof email !== "string" || typeof password !== "string" || !email || !password) {
       return res.status(400).json({ message: "Email and password are required" });
     }
 
@@ -32,7 +32,7 @@ async function login(req, res, next) {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
+    if (typeof email !== "string" || typeof password !== "string" || !email || !password) {
       return res.status(400).json({ message: "Email and password are required" });
     }
 
@@ -49,7 +49,7 @@ async function login(req, res, next) {
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "1d", algorithm: "HS256" }
     );
 
     res.status(200).json({

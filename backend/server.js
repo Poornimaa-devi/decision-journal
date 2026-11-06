@@ -1,4 +1,13 @@
 require('dotenv').config();
+
+const { validateEnv } = require('./config/env');
+const problems = validateEnv();
+if (problems.length > 0) {
+  console.error('Cannot start the server. Fix your .env file:');
+  problems.forEach((problem) => console.error(' - ' + problem));
+  process.exit(1);
+}
+
 const app = require('./app');
 const mongoose = require('mongoose');
 

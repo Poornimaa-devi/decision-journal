@@ -1,5 +1,6 @@
 const Progress = require("../models/Progress");
 const Goal = require("../models/Goals");
+const { pick, isIdString } = require("../utils/safeInput");
 
 async function getAllProgress(req, res, next) {
   try {
@@ -42,10 +43,14 @@ async function getProgressById(req, res, next) {
 
 async function createProgress(req, res, next) {
   try {
-    const { user, ...data } = req.body;
+    const data = pick(req.body, ["goal", "value", "note"]);
 
     if (!data.goal) {
       return res.status(400).json({ message: "goal is required" });
+    }
+
+        if (!isIdString(data.goal)) {
+      return res.status(400).json({ message: "Invalid goal id" });
     }
 
     const ownsGoal = await Goal.findOne({
@@ -70,7 +75,7 @@ async function createProgress(req, res, next) {
 async function updateProgress(req, res, next) {
   try {
     // user and goal can't be changed through an update
-    const { user, goal, ...updates } = req.body;
+    const updates = pick(req.body, ["value", "note"]);
 
     const updatedProgress = await Progress.findOneAndUpdate(
       { _id: req.params.id, user: req.user.userId },

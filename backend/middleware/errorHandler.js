@@ -29,8 +29,12 @@ function errorHandler(err, req, res, next) {
     return res.status(400).json({ message: "Request body is not valid JSON" });
   }
 
-  res.status(err.statusCode || 500).json({
-    message: err.message || "Something went wrong on the server",
+    const status = err.statusCode || 500;
+  const hideDetails = status === 500 && process.env.NODE_ENV === "production";
+  res.status(status).json({
+    message: hideDetails
+      ? "Something went wrong on the server"
+      : err.message || "Something went wrong on the server",
   });
 }
 

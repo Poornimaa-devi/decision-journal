@@ -1,5 +1,6 @@
 const Milestone = require("../models/Milestone");
 const Goal = require("../models/Goals");
+const { pick, isIdString } = require("../utils/safeInput");
 
 async function getAllMilestones(req, res, next) {
   try {
@@ -42,10 +43,14 @@ async function getMilestoneById(req, res, next) {
 
 async function createMilestone(req, res, next) {
   try {
-    const { user, ...data } = req.body;
+    const data = pick(req.body, ["goal", "title", "completed"]);
 
     if (!data.goal) {
       return res.status(400).json({ message: "goal is required" });
+    }
+
+        if (!isIdString(data.goal)) {
+      return res.status(400).json({ message: "Invalid goal id" });
     }
 
     const ownsGoal = await Goal.findOne({
@@ -70,7 +75,7 @@ async function createMilestone(req, res, next) {
 async function updateMilestone(req, res, next) {
   try {
     // user and goal can't be changed through an update
-    const { user, goal, ...updates } = req.body;
+    const updates = pick(req.body, ["title", "completed"]);
 
     const updatedMilestone = await Milestone.findOneAndUpdate(
       { _id: req.params.id, user: req.user.userId },

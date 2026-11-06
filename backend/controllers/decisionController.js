@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const Decision = require("../models/Decision");
+const { pick } = require("../utils/safeInput");
+
 
 async function getAllDecisions(req, res, next) {
   try {
@@ -50,7 +52,7 @@ async function getDecisionById(req, res, next) {
 
 async function createDecision(req, res, next) {
   try {
-    const { user, ...decisionData } = req.body; // any client-sent "user" is discarded
+    const decisionData = pick(req.body, ["title", "reasoning", "status"]); // any client-sent "user" is discarded
     const newDecision = await Decision.create({
       ...decisionData,
       user: req.user.userId,
@@ -63,7 +65,7 @@ async function createDecision(req, res, next) {
 
 async function updateDecision(req, res, next) {
   try {
-    const { user, ...updates } = req.body;
+    const updates = pick(req.body, ["title", "reasoning", "status"]);
     const updatedDecision = await Decision.findOneAndUpdate(
       { _id: req.params.id, user: req.user.userId },
       updates,

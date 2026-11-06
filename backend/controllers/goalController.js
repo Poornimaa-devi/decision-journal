@@ -1,22 +1,27 @@
 const mongoose = require("mongoose");
 const Goal = require("../models/Goals");
 const Decision = require("../models/Decision");
+const { pick, isIdString, escapeRegex } = require("../utils/safeInput");
 
 async function getAllGoals(req, res, next) {
   try {
     const { search, priority, completed, sort } = req.query;
 
     const filter = { user: req.user.userId };
-    if (search) filter.title = { $regex: search, $options: "i" };
-    if (priority) filter.priority = priority;
-    if (completed !== undefined) filter.completed = completed === "true";
+        // Query values must be plain text. Arrays or objects are ignored, regex characters are escaped.
+    if (typeof search === "string" && search.trim()) {
+      filter.title = { $regex: escapeRegex(search.trim()), $options: "i" };
+    }
+    if (typeof priority === "string" && priority) filter.priority = priority;
+    if (completed === "true" || completed === "false") filter.completed = completed === "true";
 
     const sortOptions = {
       progress: "progress",
       newest: "-createdAt",
       oldest: "createdAt",
     };
-    const sortBy = sortOptions[sort] || "-createdAt";
+        const sortBy =
+      typeof sort === "string" && Object.hasOwn(sortOptions, sort) ? sortOptions[sort] : "-createdAt";
 
     const goals = await Goal.find(filter).sort(sortBy).populate("decision", "title");
     res.json(goals);
@@ -43,7 +48,12 @@ async function getGoalById(req, res, next) {
 
 async function createGoal(req, res, next) {
   try {
-    const { user, ...goalData } = req.body; // any client-sent "user" is discarded
+        // Whitelist: only these fields can be set by the client. The owner comes from the token.
+    const goalData = pick(req.body, ["title", "priority", "progress", "completed", "decision"]);
+
+    if (goalData.decision && !isIdString(goalData.decision)) {
+      return res.status(400).json({ message: "Invalid decision id" });
+    }
 
     if (goalData.decision) {
       const ownsDecision = await Decision.findOne({
@@ -65,7 +75,11 @@ async function createGoal(req, res, next) {
 
 async function updateGoal(req, res, next) {
   try {
-    const { user, ...updates } = req.body;
+        const updates = pick(req.body, ["title", "priority", "progress", "completed", "decision"]);
+
+    if (updates.decision && !isIdString(updates.decision)) {
+      return res.status(400).json({ message: "Invalid decision id" });
+    }
 
     if (updates.decision) {
       const ownsDecision = await Decision.findOne({
