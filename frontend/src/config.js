@@ -1,2 +1,4 @@
-// Backend URL. Override per environment with a VITE_API_URL variable (used on deploy).
-export const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
+// Backend URL. In production set VITE_API_URL (Vite bakes it in when you BUILD).
+// A trailing slash is removed, because every request path already starts with "/".
+const rawUrl = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
+export const API_BASE_URL = rawUrl.replace(/\/+$/, "");

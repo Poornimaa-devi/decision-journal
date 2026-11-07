@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const { apiLimiter, authLimiter } = require("./middleware/rateLimiters");
+const { parseOrigins } = require("./config/env");
 const logger = require("./middleware/logger");
 const errorHandler = require("./middleware/errorHandler");
 const progressRoutes = require("./routes/progressRoutes");
@@ -23,13 +24,15 @@ if (process.env.TRUST_PROXY === "1") app.set("trust proxy", 1);
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 
 // Only the frontend addresses listed in CLIENT_ORIGIN may call this API from a browser.
-const allowedOrigins = (
+const allowedOrigins = parseOrigins(
   process.env.CLIENT_ORIGIN || "http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174"
-)
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+);
 app.use(cors({ origin: allowedOrigins }));
+
+// Lets the hosting platform (and uptime pingers) check the server is alive. No login, no database.
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
+});
 
 // Rate limits (switched off while running the automated tests).
 if (process.env.NODE_ENV !== "test") {

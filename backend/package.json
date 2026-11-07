@@ -9,6 +9,7 @@
     "test:coverage": "jest --coverage",
     "test:verbose": "jest --silent=false"
   },
+  "engines": { "node": ">=20.19.0" },
   "keywords": [],
   "author": "",
   "license": "ISC",
