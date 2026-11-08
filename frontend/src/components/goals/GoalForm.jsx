@@ -1,3 +1,4 @@
+
 import FormField from "../common/FormField";
 import ErrorMessage from "../common/ErrorMessage";
 import { useForm } from "../../hook/useForm";
@@ -11,60 +12,73 @@ function GoalForm({ onAddGoal, decisions = [] }) {
       onAddGoal({
         title: values.title.trim(),
         priority: values.priority,
-        decision: values.decision || undefined, // "" would cause a cast error (Day 67)
+        decision: values.decision || undefined,
       }),
   });
 
   return (
-    <form onSubmit={form.handleSubmit} noValidate>
-      <FormField
-        id="goal-title"
-        label="Goal title"
-        name="title"
-        value={form.values.title}
-        onChange={form.handleChange}
-        onBlur={form.handleBlur}
-        error={form.errors.title}
-        placeholder="e.g. Do 30 minutes of flashcards daily"
-      />
+    <section className="goal-form-card">
+      <div className="goal-form-heading">
+        <div>
+          <span className="section-eyebrow">PLAN YOUR NEXT STEP</span>
+          <h3>Create a new goal</h3>
+          <p>Define what you want to achieve and connect it to a decision.</p>
+        </div>
+        <div className="goal-form-icon">+</div>
+      </div>
 
-      <FormField
-        id="goal-priority"
-        label="Priority"
-        as="select"
-        name="priority"
-        value={form.values.priority}
-        onChange={form.handleChange}
-        error={form.errors.priority}
-      >
-        <option value="low">Low</option>
-        <option value="medium">Medium</option>
-        <option value="high">High</option>
-      </FormField>
+      <form onSubmit={form.handleSubmit} noValidate>
+        <FormField
+          id="goal-title"
+          label="Goal title"
+          name="title"
+          value={form.values.title}
+          onChange={form.handleChange}
+          onBlur={form.handleBlur}
+          error={form.errors.title}
+          placeholder="e.g. Do 30 minutes of flashcards daily"
+        />
 
-      <FormField
-        id="goal-decision"
-        label="Linked decision (optional)"
-        as="select"
-        name="decision"
-        value={form.values.decision}
-        onChange={form.handleChange}
-        error={form.errors.decision}
-      >
-        <option value="">No linked decision</option>
-        {decisions.map((d) => (
-          <option key={d._id} value={d._id}>
-            {d.title}
-          </option>
-        ))}
-      </FormField>
+        <FormField
+          id="goal-priority"
+          label="Priority"
+          as="select"
+          name="priority"
+          value={form.values.priority}
+          onChange={form.handleChange}
+          error={form.errors.priority}
+        >
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </FormField>
 
-      {form.submitError && !form.errors.title && <ErrorMessage error={form.submitError} />}
+        <FormField
+          id="goal-decision"
+          label="Linked decision (optional)"
+          as="select"
+          name="decision"
+          value={form.values.decision}
+          onChange={form.handleChange}
+          error={form.errors.decision}
+        >
+          <option value="">No linked decision</option>
+          {decisions.map((d) => (
+            <option key={d._id} value={d._id}>
+              {d.title}
+            </option>
+          ))}
+        </FormField>
 
-      <button type="submit" disabled={form.isSubmitting}>
-        {form.isSubmitting ? "Adding..." : "Add Goal"}
-      </button>
-    </form>
+        {form.submitError && !form.errors.title && (
+          <ErrorMessage error={form.submitError} />
+        )}
+
+        <button type="submit" disabled={form.isSubmitting}>
+          {form.isSubmitting ? "Adding..." : "+ Add Goal"}
+        </button>
+      </form>
+    </section>
   );
 }
 

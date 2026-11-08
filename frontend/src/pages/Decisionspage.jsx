@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import DecisionForm from "../components/decisions/DecisionForm";
 import Loading from "../components/common/Loading";
@@ -9,40 +10,128 @@ import { getDecisions, createDecision } from "../api/decisions";
 function DecisionsPage() {
   usePageTitle("Decisions");
 
-  const { data: decisions, setData, error, isLoading, reload } = useFetch(getDecisions, []);
+  const {
+    data: decisions,
+    setData,
+    error,
+    isLoading,
+    reload,
+  } = useFetch(getDecisions, []);
 
-  // A failure here throws up to DecisionForm, which shows it next to the form.
   async function handleAddDecision(newDecision) {
     const saved = await createDecision(newDecision);
     setData((prev) => [...(prev ?? []), saved]);
   }
 
+  const total = decisions?.length ?? 0;
+  const pending = (decisions ?? []).filter(
+    (d) => d.status === "pending"
+  ).length;
+  const decided = (decisions ?? []).filter(
+    (d) => d.status === "decided"
+  ).length;
+  const reviewing = (decisions ?? []).filter(
+    (d) => d.status === "reviewing"
+  ).length;
+
   return (
-    <div>
-      <h2>Decisions</h2>
+    <div className="decisions-page">
+      <section className="decision-stats">
+        <article className="decision-stat-card">
+          <span className="decision-stat-icon purple">◇</span>
+          <div>
+            <p>TOTAL DECISIONS</p>
+            <h3>{total}</h3>
+          </div>
+        </article>
+
+        <article className="decision-stat-card">
+          <span className="decision-stat-icon orange">◷</span>
+          <div>
+            <p>PENDING</p>
+            <h3>{pending}</h3>
+          </div>
+        </article>
+
+        <article className="decision-stat-card">
+          <span className="decision-stat-icon green">✓</span>
+          <div>
+            <p>DECIDED</p>
+            <h3>{decided}</h3>
+          </div>
+        </article>
+
+        <article className="decision-stat-card">
+          <span className="decision-stat-icon blue">↻</span>
+          <div>
+            <p>REVIEWING</p>
+            <h3>{reviewing}</h3>
+          </div>
+        </article>
+      </section>
+
       <DecisionForm onAddDecision={handleAddDecision} />
 
-      {isLoading && !decisions ? (
-        <Loading label="Loading decisions..." />
-      ) : error && !decisions ? (
-        <ErrorMessage error={error} onRetry={reload} />
-      ) : (decisions ?? []).length === 0 ? (
-        <div className="empty-state">
-          <h3>No decisions recorded yet</h3>
-          <p>Write down a decision and why you made it. You can link goals to it later.</p>
+      <section className="decisions-section">
+        <div className="decisions-section-heading">
+          <div>
+            <span className="section-eyebrow">YOUR THINKING SPACE</span>
+            <h2>Your decisions</h2>
+            <p>Every choice has a reason. Keep track of yours.</p>
+          </div>
+
+          <span className="goal-count">{total} decisions</span>
         </div>
-      ) : (
-        <ul className="decision-list">
-          {decisions.map((d) => (
-            <li key={d._id}>
-              <Link to={`/decisions/${d._id}`}>{d.title}</Link>
-              <span className="badge" data-tone={d.status}>
-                {d.status}
-              </span>
-            </li>
-          ))}
-        </ul>
-      )}
+
+        {isLoading && !decisions ? (
+          <Loading label="Loading decisions..." />
+        ) : error && !decisions ? (
+          <ErrorMessage error={error} onRetry={reload} />
+        ) : total === 0 ? (
+          <div className="empty-state">
+            <div className="empty-state-icon">◇</div>
+            <h3>No decisions recorded yet</h3>
+            <p>
+              Record your first decision above. Capture not only what you
+              chose, but why you chose it.
+            </p>
+          </div>
+        ) : (
+          <div className="decision-card-list">
+            {decisions.map((decision) => (
+              <article className="decision-card" key={decision._id}>
+                <div className="decision-card-main">
+                  <div className="decision-card-title">
+                    <span className="decision-card-symbol">◇</span>
+                    <h3>{decision.title}</h3>
+                  </div>
+
+                  <span
+                    className="badge"
+                    data-tone={decision.status}
+                  >
+                    {decision.status}
+                  </span>
+                </div>
+
+                <p className="decision-card-reasoning">
+                  {decision.reasoning}
+                </p>
+
+                <div className="decision-card-footer">
+                  <span className="decision-card-hint">
+                    Your reasoning matters
+                  </span>
+
+                  <Link to={`/decisions/${decision._id}`}>
+                    View details →
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

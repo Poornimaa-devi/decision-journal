@@ -1,17 +1,21 @@
+
 import { useState } from "react";
 import DecisionCard from "./DecisionCard";
 import DecisionDetail from "./DecisionDetail";
 
-function DecisionList({ decisions }) {
+function DecisionList({ decisions, onStatusChange }) {
   const [selectedId, setSelectedId] = useState(null);
 
-  const selectedDecision = decisions.find((d) => d._id === selectedId);
+  const selectedDecision = decisions.find(
+    (d) => d._id === selectedId
+  );
 
   if (selectedDecision) {
     return (
       <DecisionDetail
         decision={selectedDecision}
         onBack={() => setSelectedId(null)}
+        onStatusChange={onStatusChange}
       />
     );
   }

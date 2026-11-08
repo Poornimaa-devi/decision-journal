@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 
 function GoalCard({
@@ -20,39 +21,80 @@ function GoalCard({
   return (
     <article className="goal-card" data-completed={completed}>
       <div className="goal-card-header">
-        <h3 className="goal-title">{title}</h3>
+        <div className="goal-card-title">
+          <span className="goal-card-indicator"></span>
+          <h3 className="goal-title">{title}</h3>
+        </div>
+
         <span className="badge" data-tone={priority}>
           {priority}
         </span>
       </div>
 
-      {decision && <p className="goal-decision">From decision: {decision.title}</p>}
+      {decision && (
+        <div className="goal-decision">
+          <span className="decision-icon">◇</span>
+          <div>
+            <span className="decision-label">LINKED DECISION</span>
+            <p>{decision.title}</p>
+          </div>
+        </div>
+      )}
 
-      <div className="goal-progress">
-        <progress value={progress} max="100" aria-label={`Progress for ${title}`} />
-        <span>{progress}%</span>
+      <div className="goal-card-progress">
+        <div className="goal-progress-heading">
+          <span>Progress</span>
+          <strong>{progress}%</strong>
+        </div>
+
+        <progress
+          value={progress}
+          max="100"
+          aria-label={`Progress for ${title}`}
+        />
       </div>
 
-      <p>
-        <span className="badge" data-tone={completed ? "done" : "in-progress"}>
+      <div className="goal-card-status">
+        <span
+          className="badge"
+          data-tone={completed ? "done" : "in-progress"}
+        >
+          <span className="status-dot"></span>
           {completed ? "Completed" : "In progress"}
         </span>
-      </p>
+      </div>
 
       <div className="card-actions">
-        <button onClick={() => onToggleComplete(id)}>
-          {completed ? "Reopen" : "Mark complete"}
+        <button
+          type="button"
+          className="goal-action-primary"
+          onClick={() => onToggleComplete(id)}
+        >
+          {completed ? "Reopen goal" : "Mark complete"}
         </button>
 
         {confirmingDelete ? (
           <>
-            <button className="btn-danger-solid" onClick={handleConfirmDelete}>
-              Confirm delete
+            <button
+              type="button"
+              className="btn-danger-solid"
+              onClick={handleConfirmDelete}
+            >
+              Confirm
             </button>
-            <button onClick={() => setConfirmingDelete(false)}>Cancel</button>
+            <button
+              type="button"
+              onClick={() => setConfirmingDelete(false)}
+            >
+              Cancel
+            </button>
           </>
         ) : (
-          <button className="btn-danger" onClick={() => setConfirmingDelete(true)}>
+          <button
+            type="button"
+            className="btn-danger"
+            onClick={() => setConfirmingDelete(true)}
+          >
             Delete
           </button>
         )}

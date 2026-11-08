@@ -1,3 +1,4 @@
+
 import { apiFetch } from "./client";
 
 export function getDecisions() {
@@ -12,6 +13,13 @@ export function createDecision(decision) {
   return apiFetch("/api/decisions", {
     method: "POST",
     body: JSON.stringify(decision),
+  });
+}
+
+export function updateDecision(id, updates) {
+  return apiFetch(`/api/decisions/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(updates),
   });
 }
 
